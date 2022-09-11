@@ -12,10 +12,13 @@
     "@types/react-dom": "^18.0.6",
     "eslint": "8.22.0",
     "eslint-config-react-app": "^7.0.1",
+    "express": "^4.18.1",
+    "http-proxy-middleware": "^2.0.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.4.0",
     "react-pro-sidebar": "^0.7.1",
+    "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
     "react-switch": "^7.0.0",
     "sass": "^1.54.9",
@@ -29,10 +32,9 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "rules": {
+      "ban-ts-comment": 0
+    }
   },
   "browserslist": {
     "production": [

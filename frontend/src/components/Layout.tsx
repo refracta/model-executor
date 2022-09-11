@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import Aside from './Aside';
+import AsideLegacy from './AsideLegacy';
 import Main from './Main';
 
 function Layout() {
@@ -24,13 +24,12 @@ function Layout() {
     };
 
     return (
-        <div className={`app ${rtl ? 'rtl' : ''} ${toggled ? 'toggled' : ''}`}>
-            <Aside
-                image={image}
-                collapsed={collapsed}
-                rtl={rtl}
-                toggled={toggled}
-                handleToggleSidebar={handleToggleSidebar}
+        <div className={`app ${toggled ? 'toggled' : ''}`}>
+            <AsideLegacy
+                // image={image}
+                // collapsed={collapsed}
+                // toggled={toggled}
+                // handleToggleSidebar={handleToggleSidebar}
             />
             <Main
                 image={image}

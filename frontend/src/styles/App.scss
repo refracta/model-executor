@@ -44,6 +44,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+
     .sidebar-btn {
       transition: width 0.3s;
       width: 150px;
@@ -59,10 +60,12 @@ body {
       justify-content: center;
       text-overflow: ellipsis;
       overflow: hidden;
+
       span {
         margin-left: 5px;
         font-size: 13px;
       }
+
       &:hover {
         color: $highlight-color;
       }
@@ -83,9 +86,11 @@ body {
     display: flex;
     flex-direction: column;
     overflow-y: auto;
+
     header {
       margin-bottom: 40px;
       border-bottom: 1px solid #efefef;
+
       h1 {
         display: flex;
         align-items: center;
@@ -97,17 +102,21 @@ body {
       margin-top: auto;
       color: #888;
       text-align: center;
+
       a {
         text-decoration: none;
         color: #888;
+
         &:hover {
           text-decoration: underline;
         }
       }
     }
   }
+
   .social-bagdes {
     margin-top: 10px;
+
     img {
       margin: 5px;
     }
@@ -118,6 +127,7 @@ body {
     margin-bottom: 24px;
     font-size: 14px;
     color: #545454;
+
     > span {
       margin-left: 10px;
     }
@@ -132,13 +142,16 @@ body {
         transform: translateX(20px);
       }
     }
+
     .block {
       direction: rtl;
+
       > span {
         margin-left: 0;
         margin-right: 10px;
       }
     }
+
     .sidebar-btn-wrapper {
       .sidebar-btn {
         span {
@@ -175,20 +188,32 @@ body {
   font-size: 9px;
   letter-spacing: 1px;
   border-radius: 15px;
+
   &.red {
     color: #ffffff;
     background: #d63030;
   }
+
   &.gray {
     color: #ffffff;
     background: #777777;
   }
+
   &.yellow {
     color: #000000;
     background: #ffd331;
   }
+
   &.green {
     color: #ffffff;
     background: #05901e;
+  }
+}
+
+.pro-menu-item {
+  &.active {
+    .pro-inner-item {
+      background-color: cornflowerblue;
+    }
   }
 }

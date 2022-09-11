@@ -1,7 +1,7 @@
 import React, {MouseEventHandler} from 'react';
 import Switch, {ReactSwitchProps} from 'react-switch';
 import {FaHeart, FaBars} from 'react-icons/fa';
-import reactLogo from './assets/logo.svg';
+import reactLogo from '../assets/logo.svg';
 
 interface Props {
     collapsed: boolean,
