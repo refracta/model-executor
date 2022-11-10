@@ -81,7 +81,7 @@ body {
   }
 
   main {
-    padding: 24px;
+    //padding: 24px;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -210,10 +210,123 @@ body {
   }
 }
 
-.pro-menu-item {
-  &.active {
+.site-menu {
+  .active {
     .pro-inner-item {
       background-color: cornflowerblue;
     }
   }
 }
+
+.content-menu {
+  border-top: 1px solid rgba($sidebar-color, 0.2);
+
+  .active {
+    .pro-item-content, .pro-icon-wrapper {
+      font-weight: bolder;
+      color: cornflowerblue;
+    }
+  }
+}
+
+.gutter {
+  background-color: #eee;
+  background-repeat: no-repeat;
+  background-position: 50%;
+}
+
+.gutter.gutter-vertical {
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAFAQMAAABo7865AAAABlBMVEVHcEzMzMzyAv2sAAAAAXRSTlMAQObYZgAAABBJREFUeF5jOAMEEAIEEFwAn3kMwcB6I2AAAAAASUVORK5CYII=');
+  cursor: row-resize;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 10px 1fr;
+}
+
+.gutter-col {
+  grid-row: 1/-1;
+  cursor: col-resize;
+}
+
+.gutter-col-1 {
+  grid-column: 2;
+}
+
+
+.split-container {
+  width: 100%;
+  height: 100vh;
+}
+
+.main-content-container {
+  //background-color: #888888;
+  //overflow-x: hidden;
+  overflow: hidden;
+  width: calc(100%);
+  .row {
+    margin: 0px;
+  }
+}
+
+.terminal-container {
+  background-color: black;
+  display: flex;
+}
+
+#main-navbar {
+  .navbar-brand {
+    text-transform: uppercase;
+    padding-left: 10px;
+  }
+}
+.col {
+  padding:6px;
+}
+
+/*#main-navbar {
+  background-color: #0c1e35;
+
+  & .navbar-brand {
+    color: #b3b8d4;
+  }
+
+  & button {
+    background-color: #b3b8d4;
+  }
+}*/
+
+@media (max-width: 768px) {
+  .terminal-container {
+    display: none;
+  }
+  .main-content-container {
+    height: calc(100vh - 40px - 2 * 8px) !important;
+  }
+  .gutter {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  #main-navbar {
+    display: none;
+  }
+  .right-col {
+    padding-left: 0px;
+  }
+  .card-explain {
+    height: calc(33.3% - 3px);
+    margin-bottom: 6px;
+    overflow-y: auto;
+  }
+  .card-upload {
+    height: calc(66.6% - 3px);
+  }
+  .card-result {
+    padding-left: 0px;
+    height: 100%;
+  }
+}
+

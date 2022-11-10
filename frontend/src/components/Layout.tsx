@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import AsideLegacy from './AsideLegacy';
-import Main from './Main';
+import MainLegacy from './MainLegacy';
 
 function Layout() {
     const [rtl, setRtl] = useState(false);
@@ -31,7 +31,7 @@ function Layout() {
                 // toggled={toggled}
                 // handleToggleSidebar={handleToggleSidebar}
             />
-            <Main
+            <MainLegacy
                 image={image}
                 collapsed={collapsed}
                 rtl={rtl}

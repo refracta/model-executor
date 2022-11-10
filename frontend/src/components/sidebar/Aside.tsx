@@ -1,34 +1,23 @@
 import React, {useEffect, useState} from 'react';
 import SiteMenu from "./enum/SiteMenu";
-import {Menu, MenuItem, ProSidebar, SidebarContent, SidebarHeader, SubMenu} from "react-pro-sidebar";
+import {Menu, MenuItem, ProSidebar, SidebarContent, SidebarFooter, SidebarHeader, SubMenu} from "react-pro-sidebar";
 import {FaHistory, FaStar} from "react-icons/fa";
 import {AiFillSetting} from "react-icons/ai";
-import {Link} from 'react-router-dom';
+import {Link, useParams} from 'react-router-dom';
 import ContentMenu from "./menu/ContentMenu";
 
 interface Props {
-    siteMenu: SiteMenu
+    siteMenu: SiteMenu,
+    toggled:boolean,
+    handleToggleSidebar: (value: boolean) => void
 }
 
-function Aside({siteMenu}: Props) {
-    /*    const models
-        let mm;
-        useEffect(() => {
-            (async () => {
-                let models = await fetch('api/model').then(r => r.json());
-                for (let m of models) {
-                    let hierarchy: string[] = m.hierarchy;
-                    let jsx = <div></div>;
-                    let g = [React.createElement('div', {key: 1}, 'hello'), React.createElement('div', {key: 2}, 'hello')];
-                    mm = React.createElement(MenuItem, null, g);
-                    console.log(m);
-
-                }
-            })();
-        }, []);*/
+function Aside({siteMenu, toggled, handleToggleSidebar}: Props) {
     return (
         <ProSidebar
             breakPoint="md"
+            toggled={toggled}
+            onToggle={handleToggleSidebar}
         >
             <SidebarHeader>
                 <div
@@ -46,9 +35,8 @@ function Aside({siteMenu}: Props) {
                     Model executor
                 </div>
             </SidebarHeader>
-
             <SidebarContent>
-                <Menu iconShape="circle">
+                <Menu className={'site-menu'} iconShape="circle">
                     <MenuItem active={siteMenu == SiteMenu.Model} icon={<FaStar/>}>Model<Link to="/model"/></MenuItem>
                     <MenuItem active={siteMenu == SiteMenu.History} icon={<FaHistory/>}>History<Link
                         to="/history"/></MenuItem>

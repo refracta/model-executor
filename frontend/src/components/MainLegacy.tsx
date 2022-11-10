@@ -13,7 +13,7 @@ interface Props {
     handleImageChange: any,
 }
 
-const Main = ({
+const MainLegacy = ({
                   collapsed,
                   rtl,
                   image,
@@ -118,4 +118,4 @@ const Main = ({
     );
 };
 
-export default Main;
+export default MainLegacy;
