@@ -6,9 +6,25 @@ module.exports = function (app) {
         app.use(
             createProxyMiddleware(path, {
                 target: 'http://localhost:5000',
-                changeOrigin: true,
-                ws: true
+                changeOrigin: true
             })
         )
     });
+/*    app.use(
+        createProxyMiddleware('/websocket', {
+            target: 'http://localhost:5000',
+            changeOrigin: true,
+            secure: false,
+            ws: true
+        })
+    )*/
+    app.use(
+        '/ws',
+        createProxyMiddleware( '/ws',{
+            target: 'http://localhost:5000',
+            changeOrigin: true,
+            ws: true,
+            secure: false
+        })
+    );
 };

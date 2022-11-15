@@ -9,6 +9,9 @@ import {useParams} from "react-router-dom";
 import useData from "../../hooks/useData";
 import {ConfigData, ModelData} from "../../DataTypes";
 
+import useWebSocket, {ReadyState} from 'react-use-websocket';
+
+
 interface Props {
     handleToggleSidebar: any
 }
@@ -17,9 +20,24 @@ interface Props {
 function Model() {
     let {uniqueName} = useParams();
     const models: ModelData[] = useData('/api/model');
-    if (!models) {
+    const {
+        sendMessage,
+        sendJsonMessage,
+        lastMessage,
+        lastJsonMessage,
+        readyState,
+        getWebSocket,
+    } = useWebSocket((location.protocol.startsWith('https') ? 'wss://' : 'ws://') + location.host + '/ws', {
+        onOpen: () => console.log('opened'),
+        //Will attempt to reconnect on all close events, such as server shutting down
+        shouldReconnect: (closeEvent) => true,
+    });
+
+    if (!models || readyState == 0) {
         return <></>;
     }
+
+
     let model = models.find(m => m.uniqueName == uniqueName) as ModelData;
     let config = model.config;
     return (
@@ -39,7 +57,8 @@ function Model() {
                             <Card.Body>
                                 <Card.Title>Input upload</Card.Title>
                                 <Card.Text>
-                                    Drag & Drop or Upload button <br></br>(Support format: png, zip)<br></br>
+                                    Drag & Drop or Upload button <br></br>(Support
+                                    format: {Object.keys(config.input).join(', ')})<br></br>
                                     <button>Upload</button>
                                 </Card.Text>
                             </Card.Body>
@@ -50,7 +69,7 @@ function Model() {
                             <Card.Body>
                                 <Card.Title>Output</Card.Title>
                                 <Card.Text>
-                                    이곳에 모델의 결과가 출력됩니다.
+                                    Output format: {Object.keys(config.output).join(', ')}
                                 </Card.Text>
                             </Card.Body>
                         </Card>
