@@ -10,7 +10,7 @@ const server = http.createServer(app).listen(5000, () => {
 });
 
 let ws = new WebSocketServer({
-    server, path: "/",
+    server, path: "/websocket",
     perMessageDeflate: {
         zlibDeflateOptions: {
             // See zlib defaults.
@@ -32,8 +32,10 @@ let ws = new WebSocketServer({
     }
 });
 
-ws.on("connection", (socket: any, req) => {
-    socket.id = uuidv4();
+ws.on("connection", (socket, req) => {
+    let socketObject = socket as any;
+    socketObject.id = uuidv4();
+    socket.send('Hello!!');
 
     socket.on("message", (message: string) => {
         let data;

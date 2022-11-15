@@ -10,17 +10,9 @@ module.exports = function (app) {
             })
         )
     });
-/*    app.use(
-        createProxyMiddleware('/websocket', {
-            target: 'http://localhost:5000',
-            changeOrigin: true,
-            secure: false,
-            ws: true
-        })
-    )*/
+
     app.use(
-        '/ws',
-        createProxyMiddleware( '/ws',{
+        createProxyMiddleware('/websocket', {
             target: 'http://localhost:5000',
             changeOrigin: true,
             ws: true,

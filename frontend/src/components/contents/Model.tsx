@@ -27,8 +27,9 @@ function Model() {
         lastJsonMessage,
         readyState,
         getWebSocket,
-    } = useWebSocket((location.protocol.startsWith('https') ? 'wss://' : 'ws://') + location.host + '/ws', {
+    } = useWebSocket((location.protocol.startsWith('https') ? 'wss://' : 'ws://') + location.host + '/websocket', {
         onOpen: () => console.log('opened'),
+        onMessage: (message) => {console.log(message)},
         //Will attempt to reconnect on all close events, such as server shutting down
         shouldReconnect: (closeEvent) => true,
     });
@@ -36,6 +37,7 @@ function Model() {
     if (!models || readyState == 0) {
         return <></>;
     }
+    console.log('LM',lastMessage);
 
 
     let model = models.find(m => m.uniqueName == uniqueName) as ModelData;
