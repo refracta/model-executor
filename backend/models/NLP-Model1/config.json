@@ -1,1 +1,11 @@
-{}
+{
+  "name": "자연어 처리 모델1",
+  "explain": "KoGPT를 이용한 자연어 추론 모델입니다.\n\nYYYY-MM-DD일 최신화 완료",
+  "container": "NLP-Model1",
+  "input": {
+    "txt": "text-input-uploader"
+  },
+  "output": {
+    "txt": "text-output-viewer"
+  }
+}

@@ -1,1 +1,11 @@
-{}
+{
+  "name": "SwinIR",
+  "explain": "SwinIR을 이용한 업스케일링 모델",
+  "container": "SwinIR",
+  "input": {
+    "png": "general-uploader"
+  },
+  "output": {
+    "png": "general-photo-viewer"
+  }
+}
