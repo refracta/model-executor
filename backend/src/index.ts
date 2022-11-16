@@ -1,11 +1,38 @@
 import App from './App.mjs';
 import Database from "./Database.mjs";
-import WebSocket, {WebSocketServer} from "ws";
+import WebSocket, {AddressInfo, WebSocketServer} from "ws";
 import {v4 as uuidv4} from 'uuid';
 import * as http from 'http';
 import Docker, {ContainerInfo, Exec} from 'dockerode';
 import * as fs from "fs";
 import tar from 'tar';
+import net from 'net';
+
+
+let netServer = net.createServer(function(socket){
+    console.log((socket.address() as AddressInfo).address + " connected.");
+
+    // client로 부터 오는 data를 화면에 출력
+    socket.on('data', function(data){
+        console.log('rcv:' + data);
+    });
+    // client와 접속이 끊기는 메시지 출력
+    socket.on('close', function(){
+        console.log('client disconnted.');
+    });
+    // client가 접속하면 화면에 출력해주는 메시지
+    socket.write('welcome to server');
+});
+
+// 에러가 발생할 경우 화면에 에러메시지 출력
+netServer.on('error', function(err){
+    console.log('err'+ err	);
+});
+
+// Port 5000으로 접속이 가능하도록 대기
+netServer.listen(6000, function(){
+    console.log('linsteing on 5000..');
+});
 
 let docker = new Docker({host: 'abstr.net', port: 30001});
 !async function () {
@@ -26,12 +53,20 @@ let docker = new Docker({host: 'abstr.net', port: 30001});
     await tar.c(
         {
             gzip: true,
-            file: 'my-tarball.tgz'
+            file: 'controller.tar'
         },
-        ['db.json', 'yarn.lock']
+        ['controller-linux']
     );
-    await container.putArchive('my-tarball.tgz', {path: '/'});
-
+    await container.putArchive('controller.tar', {path: '/'});
+        container.exec({
+                Cmd: ['/bin/bash', '-c', 'chmod 777 controller-linux && ./controller-linux'],
+                AttachStdin: true,
+                AttachStdout: true
+            }, function (err, exec) {
+                (exec as Exec).start({hijack: true, stdin: true}, function (err, stream) {
+                    docker.modem.demuxStream(stream as any, process.stdout, process.stderr);
+                });
+            });
     // console.log(container);
 }();
 
