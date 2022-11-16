@@ -4,7 +4,7 @@ import {Mode} from "fs";
 import {Link} from "react-router-dom";
 import {FaStar} from "react-icons/fa";
 import useData from "../../../../hooks/useData";
-import {ModelData} from "../../../../DataTypes";
+import {ModelData} from "../../../../types/DataTypes";
 // {/*<MenuItem suffix={<span className="badge green">Running</span>}>1 </MenuItem>*/}
 // {/*<MenuItem suffix={<span className="badge yellow">Deploying</span>}>2 </MenuItem>*/}
 // {/*<MenuItem suffix={<span className="badge red">Undeploying</span>}>2 </MenuItem>*/}

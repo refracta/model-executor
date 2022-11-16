@@ -7,7 +7,7 @@ import Row from 'react-bootstrap/Row';
 import {Container, Nav, Navbar, NavDropdown} from "react-bootstrap";
 import {useParams} from "react-router-dom";
 import useData from "../../hooks/useData";
-import {ConfigData, ModelData} from "../../DataTypes";
+import {ConfigData, ModelData} from "../../types/DataTypes";
 
 import useWebSocket, {ReadyState} from 'react-use-websocket';
 
