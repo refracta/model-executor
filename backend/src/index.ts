@@ -5,28 +5,34 @@ import {v4 as uuidv4} from 'uuid';
 import * as http from 'http';
 import Docker, {ContainerInfo, Exec} from 'dockerode';
 import * as fs from "fs";
+import tar from 'tar';
 
 let docker = new Docker({host: 'abstr.net', port: 30001});
 !async function () {
     let containers = await docker.listContainers();
     let containerInfo = containers.find(c => c.Names.some(n => n.includes('/test'))) as ContainerInfo;
     let container = docker.getContainer(containerInfo.Id);
-    container.exec({Cmd: ['/bin/bash' ,'-c', 'base64 -d > testrun'], AttachStdin: true, AttachStdout: true}, function (err, exec) {
-        // base64 en/de 과정에서 속도 손실 예상
-        // Archive 함수 테스트
-        (exec as Exec).start({hijack: true, stdin: true}, function (err, stream) {
-            // shasum can't finish until after its stdin has been closed, telling it that it has
-            // read all the bytes it needs to sum. Without a socket upgrade, there is no way to
-            // close the write-side of the stream without also closing the read-side!
-            fs.createReadStream('cc', 'base64').pipe(stream as any);
+    /*    container.exec({
+            Cmd: ['/bin/bash', '-c', 'base64 -d > testrun'],
+            AttachStdin: true,
+            AttachStdout: true
+        }, function (err, exec) {
+            (exec as Exec).start({hijack: true, stdin: true}, function (err, stream) {
+                fs.createReadStream('cc', 'base64').pipe(stream as any);
+                docker.modem.demuxStream(stream as any, process.stdout, process.stderr);
+            });
+        });*/
+    console.log('exec');
+    await tar.c(
+        {
+            gzip: true,
+            file: 'my-tarball.tgz'
+        },
+        ['db.json', 'yarn.lock']
+    );
+    await container.putArchive('my-tarball.tgz', {path: '/'});
 
-            // Fortunately, we have a regular TCP socket now, so when the readstream finishes and closes our
-            // stream, it is still open for reading and we will still get our results :-)
-            docker.modem.demuxStream(stream as any, process.stdout, process.stderr);
-        });
-    });
-
-    console.log(container);
+    // console.log(container);
 }();
 
 const app = new App().application;
