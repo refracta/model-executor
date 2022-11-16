@@ -1,82 +1,20 @@
-import App from './App.mjs';
-import Database from "./Database.mjs";
-import WebSocket, {AddressInfo, WebSocketServer} from "ws";
-import {v4 as uuidv4} from 'uuid';
-import * as http from 'http';
-import Docker, {ContainerInfo, Exec} from 'dockerode';
+import HTTPServer from "./server/HTTPServer.mjs";
+import SocketServer from "./server/SocketServer.mjs";
+import WSServer from "./server/WSServer.mjs";
+import HTTPHandler from "./server/handler/HTTPHandler.mjs";
+import PlatformServer from "./server/PlatformServer.mjs";
 import * as fs from "fs";
-import tar from 'tar';
-import net from 'net';
 
+if (!fs.existsSync('config.json')) {
+    fs.writeFileSync('config.json', JSON.stringify({httpPort: 5000, socketPort: 5050}), 'utf8');
+}
+const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 
-let netServer = net.createServer(function(socket){
-    console.log((socket.address() as AddressInfo).address + " connected.");
+const httpServer: HTTPServer = new HTTPServer();
+httpServer.callHandler(new HTTPHandler());
 
-    // client로 부터 오는 data를 화면에 출력
-    socket.on('data', function(data){
-        console.log('rcv:' + data);
-    });
-    // client와 접속이 끊기는 메시지 출력
-    socket.on('close', function(){
-        console.log('client disconnted.');
-    });
-    // client가 접속하면 화면에 출력해주는 메시지
-    socket.write('welcome to server');
-});
-
-// 에러가 발생할 경우 화면에 에러메시지 출력
-netServer.on('error', function(err){
-    console.log('err'+ err	);
-});
-
-// Port 5000으로 접속이 가능하도록 대기
-netServer.listen(6000, function(){
-    console.log('linsteing on 5000..');
-});
-
-let docker = new Docker({host: 'abstr.net', port: 30001});
-!async function () {
-    let containers = await docker.listContainers();
-    let containerInfo = containers.find(c => c.Names.some(n => n.includes('/test'))) as ContainerInfo;
-    let container = docker.getContainer(containerInfo.Id);
-    /*    container.exec({
-            Cmd: ['/bin/bash', '-c', 'base64 -d > testrun'],
-            AttachStdin: true,
-            AttachStdout: true
-        }, function (err, exec) {
-            (exec as Exec).start({hijack: true, stdin: true}, function (err, stream) {
-                fs.createReadStream('cc', 'base64').pipe(stream as any);
-                docker.modem.demuxStream(stream as any, process.stdout, process.stderr);
-            });
-        });*/
-    console.log('exec');
-    await tar.c(
-        {
-            gzip: true,
-            file: 'controller.tar'
-        },
-        ['controller-linux']
-    );
-    await container.putArchive('controller.tar', {path: '/'});
-        container.exec({
-                Cmd: ['/bin/bash', '-c', 'chmod 777 controller-linux && ./controller-linux'],
-                AttachStdin: true,
-                AttachStdout: true
-            }, function (err, exec) {
-                (exec as Exec).start({hijack: true, stdin: true}, function (err, stream) {
-                    docker.modem.demuxStream(stream as any, process.stdout, process.stderr);
-                });
-            });
-    // console.log(container);
-}();
-
-const app = new App().application;
-const server = http.createServer(app).listen(5000, () => {
-    console.log('Server listening on port 5000');
-});
-
-let ws = new WebSocketServer({
-    server, path: "/websocket",
+const wsServer: WSServer = new WSServer({
+    server: httpServer.server, path: "/websocket",
     perMessageDeflate: {
         zlibDeflateOptions: {
             // See zlib defaults.
@@ -97,26 +35,11 @@ let ws = new WebSocketServer({
         // should not be compressed.
     }
 });
+// wsServer.addHandler();
+const socketServer: SocketServer = new SocketServer();
+// socketServer.addHandler()
 
-ws.on("connection", (socket, req) => {
-    let socketObject = socket as any;
-    socketObject.id = uuidv4();
-    socket.send('Hello!!');
+PlatformServer.init({httpServer, wsServer, socketServer});
 
-    socket.on("message", (message: string) => {
-        let data;
-        try {
-            data = JSON.parse(message);
-        } catch (e) {
-            console.error('Error JSON Parsing:', message.length, message);
-        }
-    });
-
-    socket.on("error", (error: Error) => {
-        socket.close();
-    });
-
-    socket.on("close", () => {
-
-    });
-});
+httpServer.listen(config.httpPort);
+socketServer.listen(config.socketPort);
