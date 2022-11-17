@@ -2,8 +2,8 @@ type ConfigData = {
     name: string,
     explain: string,
     container: string
-    input: { [index: string]: string },
-    output: { [index: string]: string }
+    input: { module: string, options: any },
+    output: { module: string, options: any }
 }
 
 type ModelData = {

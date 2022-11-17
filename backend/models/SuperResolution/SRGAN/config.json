@@ -3,9 +3,19 @@
   "explain": "GAN을 이용한 업스케일링 모델 v2",
   "container": "SRCNNv2",
   "input": {
-    "png": "general-uploader"
+    "module": "GeneralSingleFileUploader",
+    "options": {
+      "format": [
+        "png"
+      ]
+    }
   },
   "output": {
-    "png": "general-photo-viewer"
+    "module": "GeneralSinglePhotoViewer",
+    "options": {
+      "format": [
+        "png"
+      ]
+    }
   }
 }

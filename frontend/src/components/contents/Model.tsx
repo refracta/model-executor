@@ -1,6 +1,8 @@
 import React from 'react';
 import Split from 'react-split'
 
+import Dropzone from 'react-dropzone'
+
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
@@ -10,11 +12,7 @@ import useData from "../../hooks/useData";
 import {ConfigData, ModelData} from "../../types/DataTypes";
 
 import useWebSocket, {ReadyState} from 'react-use-websocket';
-
-
-interface Props {
-    handleToggleSidebar: any
-}
+import IOModule from "../io/IOModule";
 
 // JSP(param1, param2) <= parametr
 function Model() {
@@ -29,7 +27,9 @@ function Model() {
         getWebSocket,
     } = useWebSocket((location.protocol.startsWith('https') ? 'wss://' : 'ws://') + location.host + '/websocket', {
         onOpen: () => console.log('opened'),
-        onMessage: (message) => {console.log(message)},
+        onMessage: (message) => {
+            console.log(message)
+        },
         //Will attempt to reconnect on all close events, such as server shutting down
         shouldReconnect: (closeEvent) => true,
     });
@@ -37,7 +37,7 @@ function Model() {
     if (!models || readyState == 0) {
         return <></>;
     }
-    console.log('LM',lastMessage);
+    console.log('LM', lastMessage);
 
 
     let model = models.find(m => m.uniqueName == uniqueName) as ModelData;
@@ -60,9 +60,11 @@ function Model() {
                                 <Card.Title>Input upload</Card.Title>
                                 <Card.Text>
                                     Drag & Drop or Upload button <br></br>(Support
-                                    format: {Object.keys(config.input).join(', ')})<br></br>
-                                    <button>Upload</button>
+                                    format: {config.input.options.format.join(', ')})<br></br>
+                                    {/*<button>Upload</button>*/}
+
                                 </Card.Text>
+                                <IOModule name={config.input.module}></IOModule>
                             </Card.Body>
                         </Card>
                     </Col>
@@ -71,7 +73,7 @@ function Model() {
                             <Card.Body>
                                 <Card.Title>Output</Card.Title>
                                 <Card.Text>
-                                    Output format: {Object.keys(config.output).join(', ')}
+                                    Output format: {config.output.options.format.join(', ')}
                                 </Card.Text>
                             </Card.Body>
                         </Card>
