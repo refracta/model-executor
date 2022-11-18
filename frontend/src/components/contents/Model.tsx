@@ -49,9 +49,9 @@ function Model() {
                     <Col className='left-col'>
                         <Card className='card-explain'>
                             <Card.Body>
-                                <Card.Title>{config.name}</Card.Title>
+                                <Card.Title>{config!.name}</Card.Title>
                                 <Card.Text>
-                                    <span style={{whiteSpace: "pre-wrap"}}>{config.explain}</span>
+                                    <span style={{whiteSpace: "pre-wrap"}}>{config!.explain}</span>
                                 </Card.Text>
                             </Card.Body>
                         </Card>
@@ -60,11 +60,14 @@ function Model() {
                                 <Card.Title>Input upload</Card.Title>
                                 <Card.Text>
                                     Drag & Drop or Upload button <br></br>(Support
-                                    format: {config.input.options.format.join(', ')})<br></br>
+                                    format: {config!.input.options.format.join(', ')})<br></br>
                                     {/*<button>Upload</button>*/}
-
                                 </Card.Text>
-                                <IOModule name={config.input.module}></IOModule>
+                                {model.status === 'off' ? <IOModule moduleName={config!.input.module}
+                                                                    model={model}></IOModule> :
+                                    <p style={{color: 'red'}}>Model is already running. Upload is disabled while
+                                        running.</p>}
+
                             </Card.Body>
                         </Card>
                     </Col>
@@ -73,7 +76,7 @@ function Model() {
                             <Card.Body>
                                 <Card.Title>Output</Card.Title>
                                 <Card.Text>
-                                    Output format: {config.output.options.format.join(', ')}
+                                    Output format: {config!.output.options.format.join(', ')}
                                 </Card.Text>
                             </Card.Body>
                         </Card>

@@ -1,3 +1,6 @@
+import {Dispatch, SetStateAction} from "react";
+
+
 type ConfigData = {
     name: string,
     explain: string,
@@ -11,8 +14,15 @@ type ModelData = {
     hierarchy: string[],
     name: string,
     uniqueName: string,
-    config: ConfigData,
+    config?: ConfigData,
     status: string
 }
 
-export type {ModelData, ConfigData};
+type AppData = {
+    model: ModelData | null,
+    setModel: Dispatch<SetStateAction<ModelData | null>>
+    models: ModelData[]
+    setModels: Dispatch<SetStateAction<ModelData[]>>
+}
+
+export type {ModelData, ConfigData, AppData};

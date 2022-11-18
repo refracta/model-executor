@@ -53,7 +53,7 @@ class SocketServer {
         if (index > -1) {
             this.sockets.splice(index, 1);
         }
-    }
+}
 
     public listen(port: number) {
         this.server.listen(port, function () {

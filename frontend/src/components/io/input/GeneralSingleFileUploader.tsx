@@ -1,5 +1,6 @@
 import React, {CSSProperties, useEffect, useState} from 'react';
 import {useDropzone} from 'react-dropzone';
+import {ModelData} from "../../../types/DataTypes";
 
 const thumbsContainer: CSSProperties = {
     display: 'flex',
@@ -34,7 +35,8 @@ const img: CSSProperties = {
 
 type IFile = File & { preview?: string };
 
-function GeneralSingleFileUploader() {
+function GeneralSingleFileUploader({model}: { model: ModelData }) {
+    console.log(model);
     const [files, setFiles] = useState<IFile[]>([]);
     const {getRootProps, getInputProps} = useDropzone({
         accept: {
@@ -44,6 +46,17 @@ function GeneralSingleFileUploader() {
             setFiles(acceptedFiles.map((file) => Object.assign(file, {
                 preview: URL.createObjectURL(file)
             })));
+
+            const data = new FormData();
+
+            for (const file of acceptedFiles) {
+                data.append('files', file, file.name);
+            }
+
+            return fetch('/api/upload', {
+                method: 'POST',
+                body: data,
+            });
         }
     });
 

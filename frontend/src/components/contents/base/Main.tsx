@@ -1,6 +1,5 @@
 import React, {ReactNode} from 'react';
 import NavbarMenu from "../../sidebar/menu/impl/NavbarMenu";
-import SiteMenu from "../../sidebar/enum/SiteMenu";
 
 
 interface Props {

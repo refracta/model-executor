@@ -4,7 +4,7 @@ import {Mode} from "fs";
 import {Link} from "react-router-dom";
 import {FaStar} from "react-icons/fa";
 import useData from "../../../../hooks/useData";
-import {ModelData} from "../../../../types/DataTypes";
+import {AppData, ModelData} from "../../../../types/DataTypes";
 // {/*<MenuItem suffix={<span className="badge green">Running</span>}>1 </MenuItem>*/}
 // {/*<MenuItem suffix={<span className="badge yellow">Deploying</span>}>2 </MenuItem>*/}
 // {/*<MenuItem suffix={<span className="badge red">Undeploying</span>}>2 </MenuItem>*/}
@@ -42,39 +42,36 @@ function menuify(renderHierarchy: { [key: string | symbol]: any }, uniqueName?: 
     if (Symbol.for('model') in renderHierarchy) {
         let model: ModelData = renderHierarchy[Symbol.for('model')];
 
-
         return (<MenuItem icon={<FaStar/>} active={model.uniqueName == uniqueName}
                           suffix={toBadge(model.status)}
                           key={pathKey}>{model.name}<Link to={`/model/${model.uniqueName}`}></Link></MenuItem>);
     } else {
-            let children = keys.map(key => menuify(renderHierarchy[key], uniqueName, key, pathKey));
-            if (!current) {
-                return (
-                    <>
-                        {children}
-                    </>
-                );
-            } else {
-                return (
-                    <SubMenu defaultOpen={true} key={pathKey} title={current}>
-                        {children}
-                    </SubMenu>
-                );
-            }
+        let children = keys.map(key => menuify(renderHierarchy[key], uniqueName, key, pathKey));
+        if (!current) {
+            return (
+                <>
+                    {children}
+                </>
+            );
+        } else {
+            return (
+                <SubMenu defaultOpen={true} key={pathKey} title={current}>
+                    {children}
+                </SubMenu>
+            );
+        }
     }
 }
 
 interface Props {
-    uniqueName?: string
+    data: AppData
 }
 
-function ModelMenu({uniqueName}: Props) {
-    const models: ModelData[] = useData('/api/model');
-    if (!models) {
-        return <></>
-    }
-    let renderHierarchy = toRenderHierarchy(models);
-    return menuify(renderHierarchy, uniqueName);
+function ModelMenu({data}: Props) {
+    console.log(data);
+    let renderHierarchy = toRenderHierarchy(data.models);
+    console.log(data.model?.uniqueName);
+    return menuify(renderHierarchy, data.model?.uniqueName);
 }
 
 export default ModelMenu;
