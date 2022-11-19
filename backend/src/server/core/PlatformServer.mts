@@ -1,6 +1,7 @@
-import HTTPServer from "./HTTPServer.mjs";
-import SocketServer from "./SocketServer.mjs";
-import WSServer from "./WSServer.mjs";
+import HTTPServer from "../HTTPServer.mjs";
+import SocketServer from "../SocketServer.mjs";
+import WSServer from "../WSServer.mjs";
+import Model from "../../Model.mjs";
 
 class PlatformServer {
     private static instance: PlatformServer;

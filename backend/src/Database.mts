@@ -2,12 +2,23 @@ import {LowSync, JSONFileSync, Adapter} from 'lowdb'
 import Model from "./Model.mjs";
 
 type ModelData = {
-    status: string
+    status: string,
+    historyIndex?: number
 }
 type Models = {
     [index: string]: ModelData
 }
-type HistoryData = {}
+
+type HistoryData = {
+    modelPath: string,
+    inputPath?: string,
+    inputInfo?: any,
+    outputPath?: string,
+    outputInfo?: any,
+    description?: string,
+    time?: Date
+}
+
 type Data = {
     models: Models,
     histories: HistoryData[]
@@ -46,6 +57,17 @@ class Database {
         let models: Models = Database.db.data?.models as Models;
         models[path] = modelData;
         Database.db.write();
+    }
+
+    public getHistoryData(index: number): HistoryData {
+        let histories: HistoryData[] = Database.db.data?.histories as HistoryData[];
+        return histories[index];
+    }
+
+    public addHistoryData(historyData: HistoryData): number {
+        let histories: HistoryData[] = Database.db.data?.histories as HistoryData[];
+        histories.push(historyData);
+        return histories.length - 1;
     }
 }
 

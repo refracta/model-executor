@@ -1,5 +1,5 @@
 const {createProxyMiddleware} = require('http-proxy-middleware');
-const backendPaths = ['/api'];
+const backendPaths = ['/api', '/resources'];
 
 module.exports = function (app) {
     backendPaths.forEach(path => {

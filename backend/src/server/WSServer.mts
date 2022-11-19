@@ -5,7 +5,7 @@ import {SocketAddress} from "net";
 type IWSSocket = WebSocket & { id?: string, data?: any, req?: any };
 
 interface WebSocketHandler {
-    onOpen?: (server: WSServer, socket: IWSSocket) => void,
+    onReady?: (server: WSServer, socket: IWSSocket) => void,
     onMessage?: (server: WSServer, socket: IWSSocket, message: RawData, isBinary: boolean) => void,
     onClose?: (server: WSServer, socket: IWSSocket, code: number, reason: Buffer) => void,
 }
@@ -21,15 +21,14 @@ class WSServer {
         this.server.on('connection', (socket: IWSSocket, req) => {
             socket.id = uuidv4();
             socket.req = req;
+            socket.data = {};
             this.socketsMap[socket.id as string] = socket;
             this.sockets.push(socket);
 
             let address = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
             console.log('WebSocketServer: ' + address + " connected.");
 
-            socket.on('open', () => {
-                this.handlers.forEach(h => h.onOpen?.(this, socket));
-            });
+            this.handlers.forEach(h => h.onReady?.(this, socket));
 
             socket.on('message', (message: RawData, isBinary: boolean) => {
                 this.handlers.forEach(h => h.onMessage?.(this, socket, message, isBinary));

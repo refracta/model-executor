@@ -4,7 +4,7 @@ import {Mode} from "fs";
 import {Link} from "react-router-dom";
 import {FaStar} from "react-icons/fa";
 import useData from "../../../../hooks/useData";
-import {AppData, ModelData} from "../../../../types/DataTypes";
+import {AppData, ModelData} from "../../../../types/Types";
 // {/*<MenuItem suffix={<span className="badge green">Running</span>}>1 </MenuItem>*/}
 // {/*<MenuItem suffix={<span className="badge yellow">Deploying</span>}>2 </MenuItem>*/}
 // {/*<MenuItem suffix={<span className="badge red">Undeploying</span>}>2 </MenuItem>*/}
@@ -64,14 +64,14 @@ function menuify(renderHierarchy: { [key: string | symbol]: any }, uniqueName?: 
 }
 
 interface Props {
-    data: AppData
+    data: AppData,
+    modelUniqueName?: string
+    // for fast interactive reaction
 }
 
-function ModelMenu({data}: Props) {
-    console.log(data);
+function ModelMenu({data, modelUniqueName}: Props) {
     let renderHierarchy = toRenderHierarchy(data.models);
-    console.log(data.model?.uniqueName);
-    return menuify(renderHierarchy, data.model?.uniqueName);
+    return menuify(renderHierarchy, modelUniqueName);
 }
 
 export default ModelMenu;

@@ -1,6 +1,6 @@
-import React, {CSSProperties, useEffect, useState} from 'react';
+import React, {CSSProperties, useEffect, useRef, useState} from 'react';
 import {useDropzone} from 'react-dropzone';
-import {ModelData} from "../../../types/DataTypes";
+import {ModelData} from "../../../types/Types";
 
 const thumbsContainer: CSSProperties = {
     display: 'flex',
@@ -36,13 +36,25 @@ const img: CSSProperties = {
 type IFile = File & { preview?: string };
 
 function GeneralSingleFileUploader({model}: { model: ModelData }) {
-    console.log(model);
     const [files, setFiles] = useState<IFile[]>([]);
+    const [hideDropzone, setHideDropzone] = useState<boolean>(model.status !== 'off');
+    const [uploadExplain, setUploadExplain] = useState<string>('');
+    useEffect(() => {
+        setFiles([]);
+        setUploadExplain('');
+        setHideDropzone(model.status != 'off');
+    }, [model]);
+
     const {getRootProps, getInputProps} = useDropzone({
         accept: {
             'image/*': []
         },
-        onDrop: (acceptedFiles: IFile[]) => {
+        // TODO: 이미지 말고 다양한 타입 지원
+        onDrop: async (acceptedFiles: IFile[]) => {
+            setUploadExplain('Uploading...');
+            setHideDropzone(true);
+
+            acceptedFiles = acceptedFiles.slice(0, 1);
             setFiles(acceptedFiles.map((file) => Object.assign(file, {
                 preview: URL.createObjectURL(file)
             })));
@@ -52,16 +64,25 @@ function GeneralSingleFileUploader({model}: { model: ModelData }) {
             for (const file of acceptedFiles) {
                 data.append('files', file, file.name);
             }
+            data.append('modelUniqueName', model.uniqueName);
 
-            return fetch('/api/upload', {
+            let result = await fetch('/api/upload', {
                 method: 'POST',
                 body: data,
-            });
+            }).then(r => r.json());
+            if (result.status === 'success') {
+                setUploadExplain('Done!');
+            } else {
+                setFiles([]);
+                setHideDropzone(false);
+                setUploadExplain('Error');
+            }
+
         }
     });
 
     const thumbs = files.map((file: IFile) => (
-        <div style={thumb} key={file.name}>
+        (<div style={thumb} key={file.name}>
             <div style={thumbInner}>
                 <img
                     src={file.preview}
@@ -72,7 +93,7 @@ function GeneralSingleFileUploader({model}: { model: ModelData }) {
                     }}
                 />
             </div>
-        </div>
+        </div>)
     ));
 
     useEffect(() => {
@@ -80,17 +101,37 @@ function GeneralSingleFileUploader({model}: { model: ModelData }) {
         return () => files.forEach((file: IFile) => URL.revokeObjectURL(file.preview as string));
     }, []);
 
-    return (
-        <section className="container">
-            <div {...getRootProps({className: 'dropzone'})}>
-                <input {...getInputProps()} />
-                <p>Drag 'n' drop some files here, or click to select files</p>
-            </div>
-            <aside style={thumbsContainer}>
-                {thumbs}
-            </aside>
-        </section>
-    );
+    if (model.status === 'off') {
+        return (
+            <section className="container">
+                <div {...getRootProps({className: 'dropzone'})} style={hideDropzone ? {display: 'none'} : {}}
+                >
+                    <input {...getInputProps()} />
+                    <p>Drag 'n' drop some files here, or click to select files</p>
+                </div>
+                <aside style={thumbsContainer}>
+                    {thumbs}
+                </aside>
+                <span>{uploadExplain}</span>
+            </section>
+        );
+    } else {
+        let inputInfo = model.history?.inputInfo;
+        return <>
+            <span style={{fontWeight: 'bold'}}>Filename: </span><span>{inputInfo.originalname}</span>
+            <br/>
+            <span style={{fontWeight: 'bold'}}>Type: </span><span>{inputInfo.mimetype}</span>
+            <br/>
+            <span style={{fontWeight: 'bold'}}>Size: </span><span>{inputInfo.size}</span>
+            <br/>
+            {inputInfo.mimetype.startsWith('image') ? <img src={inputInfo.webpath} style={{
+                maxHeight: '40vh',
+                maxWidth: '100%',
+                overflow: 'hidden',
+                paddingBottom: '55px'
+            }}/> : <></>}
+        </>
+    }
 }
 
 export default GeneralSingleFileUploader;

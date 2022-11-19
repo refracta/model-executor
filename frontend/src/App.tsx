@@ -1,56 +1,84 @@
-import React, {useState} from 'react';
-import {Navigate, Route, Routes, useMatch, useParams} from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {Navigate, Route, Routes, useMatch} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/App.scss';
 import './App.css';
 import Aside from "./components/sidebar/Aside";
-import {Menu} from "react-pro-sidebar";
-import ModelMenu from "./components/sidebar/menu/impl/ModelMenu";
-import SiteMenu from "./components/sidebar/menu/SiteMenu";
-import SettingMenu from "./components/sidebar/menu/impl/SettingMenu";
-import HistoryMenu from "./components/sidebar/menu/impl/HistoryMenu";
-import {ModelData} from "./types/DataTypes";
-import useData from "./hooks/useData";
+import {AppData, ModelData} from "./types/Types";
+import Main from "./components/contents/base/Main";
 
-const isMatch = (pattern: string) => useMatch(pattern) ? true : false;
-
+import useWebSocket from "react-use-websocket";
 
 function App() {
     const [models, setModels] = useState<ModelData[]>([]);
     const [model, setModel] = useState<ModelData | null>(null);
-    let data = {model, setModel, models, setModels};
-    let modelUniqueName = useMatch('/model/:uniqueName')?.params?.uniqueName;
-    !async function(){
-        let loadedModels = await fetch('/api/models').then(r=>r.json());
-        if (models.length === 0 && loadedModels) {
-            setModels(loadedModels);
+    const {
+        sendMessage,
+        sendJsonMessage,
+        lastMessage,
+        lastJsonMessage,
+        readyState,
+        getWebSocket,
+    } = useWebSocket((location.protocol.startsWith('https') ? 'wss://' : 'ws://') + location.host + '/websocket', {
+        shouldReconnect: (closeEvent) => true,
+        onMessage: (message) => {
+            let data = JSON.parse(message.data);
+            if (data?.msg === 'UpdateModels') {
+                console.log(data);
+                setModels(data.models);
+            } else if (data?.msg === 'UpdateModel') {
+                console.log(data);
+                setModel(data.model);
+            }
         }
-/*        if(modelUniqueName) {
-            let loadedModel = await fetch('/api/model/' + modelUniqueName).then(r=>r.json());;
-            if (model === null && loadedModel || modelUniqueName !== model?.uniqueName) {
+    });
+
+
+    let data = {
+        model,
+        setModel,
+        models,
+        setModels,
+        sendMessage,
+        sendJsonMessage,
+        lastMessage,
+        lastJsonMessage,
+        readyState,
+        getWebSocket
+    };
+    let modelUniqueName = useMatch('/model/:uniqueName')?.params?.uniqueName;
+    let path = useMatch('/*')?.params['*'];
+    useEffect(() => {
+        sendJsonMessage({msg: 'path', path});
+    }, [path]);
+
+    useEffect(() => {
+        !async function () {
+            if (models.length === 0) {
+                let loadedModels = await fetch('/api/models').then(r => r.json());
+                setModels(loadedModels);
+            }
+        }();
+    });
+
+    useEffect(() => {
+        !async function () {
+            if (modelUniqueName !== null && modelUniqueName !== model?.uniqueName) {
+                let loadedModel = await fetch('/api/model/' + modelUniqueName).then(r => r.json());
                 setModel(loadedModel);
             }
-        }*/
-    }();
+        }();
+    }, [modelUniqueName]);
 
     const [toggled, setToggled] = useState(false);
     return (
         <Routes>
             <Route path='*' element={
                 <div className='app'>
-                    <Aside toggled={toggled} setToggled={setToggled}>
-                        <SiteMenu/>
-                        <Menu className={'content-menu'}>
-                            <Routes>
-                                <Route path="/model/" element={<ModelMenu data={data}/>}/>
-                                <Route path="/model/:uniqueName" element={<ModelMenu data={data}/>}/>
-                                <Route path="/history/*" element={<HistoryMenu/>}/>
-                                <Route path="/setting/*" element={<SettingMenu/>}/>
-                            </Routes>
-                        </Menu>
-                    </Aside>
+                    <Aside toggled={toggled} setToggled={setToggled} data={data} modelUniqueName={modelUniqueName}/>
+                    <Main setToggled={setToggled} data={data}/>
                 </div>
-            }/>
+            }></Route>
             <Route path='/' element={<Navigate to="/model" replace/>}/>
         </Routes>
     );

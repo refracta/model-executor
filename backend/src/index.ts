@@ -2,8 +2,9 @@ import HTTPServer from "./server/HTTPServer.mjs";
 import SocketServer from "./server/SocketServer.mjs";
 import WSServer from "./server/WSServer.mjs";
 import HTTPHandler from "./server/handler/HTTPHandler.mjs";
-import PlatformServer from "./server/PlatformServer.mjs";
+import PlatformServer from "./server/core/PlatformServer.mjs";
 import * as fs from "fs";
+import WSHandler from "./server/handler/WSHandler.mjs";
 
 if (!fs.existsSync('config.json')) {
     fs.writeFileSync('config.json', JSON.stringify({httpPort: 5000, socketPort: 5050}), 'utf8');
@@ -11,8 +12,6 @@ if (!fs.existsSync('config.json')) {
 const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 
 const httpServer: HTTPServer = new HTTPServer();
-httpServer.callHandler(new HTTPHandler());
-
 const wsServer: WSServer = new WSServer({
     server: httpServer.server, path: "/websocket",
     perMessageDeflate: {
@@ -35,11 +34,13 @@ const wsServer: WSServer = new WSServer({
         // should not be compressed.
     }
 });
-// wsServer.addHandler();
 const socketServer: SocketServer = new SocketServer();
-// socketServer.addHandler()
+
 
 PlatformServer.init({httpServer, wsServer, socketServer});
+httpServer.callHandler(new HTTPHandler());
+wsServer.addHandler(new WSHandler());
+
 
 httpServer.listen(config.httpPort);
 socketServer.listen(config.socketPort);

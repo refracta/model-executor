@@ -2,14 +2,14 @@ import React from 'react';
 import {Container, Navbar} from "react-bootstrap";
 
 interface Props {
-    handleToggleSidebar: (value: boolean) => void
+    setToggled: (value: boolean) => void
 }
 
-function NavbarMenu({handleToggleSidebar}: Props) {
+function NavbarMenu({setToggled}: Props) {
     return (<Navbar id="main-navbar" expand="md">
         <Container>
             <Navbar.Brand href="#">Model executor</Navbar.Brand>
-            <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={() => handleToggleSidebar(true)}/>
+            <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={() => setToggled(true)}/>
         </Container>
     </Navbar>);
 }

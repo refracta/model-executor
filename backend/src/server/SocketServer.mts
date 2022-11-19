@@ -1,7 +1,6 @@
 import net, {Server, Socket, SocketAddress} from 'net';
 import {v4 as uuidv4} from 'uuid';
-
-type ISocket = Socket & { id?: string, data?: any };
+import {ISocket} from "./types/Types.mjs";
 
 interface SocketHandler {
     onReady?: (server: SocketServer, socket: ISocket) => void,
@@ -18,6 +17,7 @@ class SocketServer {
     constructor() {
         this.server = net.createServer((socket: ISocket) => {
             socket.id = uuidv4();
+            socket.data = {};
             this.socketsMap[socket.id] = socket;
             this.sockets.push(socket);
 
@@ -53,7 +53,7 @@ class SocketServer {
         if (index > -1) {
             this.sockets.splice(index, 1);
         }
-}
+    }
 
     public listen(port: number) {
         this.server.listen(port, function () {

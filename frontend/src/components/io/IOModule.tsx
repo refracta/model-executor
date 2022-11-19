@@ -1,7 +1,7 @@
 import React from 'react';
 import GeneralSinglePhotoViewer from "./output/GeneralSinglePhotoViewer";
 import GeneralSingleFileUploader from "./input/GeneralSingleFileUploader";
-import {ModelData} from "../../types/DataTypes";
+import {ModelData} from "../../types/Types";
 
 let modules = [GeneralSinglePhotoViewer, GeneralSingleFileUploader];
 

@@ -26,7 +26,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "dev": "nodemon --ignore db.json --exec ts-node src/index.ts",
+    "dev": "nodemon --watch src --ignore db.json -e js,mjs,ts,mts,json --exec ts-node src/index.ts",
     "start": "node build/index.js"
   },
   "type": "module"
