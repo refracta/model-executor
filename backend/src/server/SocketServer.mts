@@ -32,6 +32,10 @@ class SocketServer {
                 this.handlers.forEach(h => h.onData?.(this, socket, data));
             });
 
+            socket.on('error', (err: Error) => {
+                socket.destroy();
+            });
+
             socket.on('close', (hadError: boolean) => {
                 this.handlers.forEach(h => h.onClose?.(this, socket, hadError));
                 this.sockets.splice(this.sockets.indexOf(socket), 1);
