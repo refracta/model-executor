@@ -27,9 +27,11 @@ function toBadge(status: string) {
         case 'deploying':
             return (<span className="badge yellow">Deploying</span>);
         case 'undeploying':
-            return (<span className="badge red">Undeploying</span>);
+            return (<span className="badge blue">Undeploying</span>);
         case 'running':
             return (<span className="badge green">Running</span>);
+        case 'error':
+            return (<span className="badge red">Error</span>);
         case 'off':
         default:
             return (<></>);

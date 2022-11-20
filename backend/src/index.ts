@@ -5,11 +5,7 @@ import HTTPHandler from "./server/handler/HTTPHandler.mjs";
 import PlatformServer from "./server/core/PlatformServer.mjs";
 import * as fs from "fs";
 import WSHandler from "./server/handler/WSHandler.mjs";
-
-if (!fs.existsSync('config.json')) {
-    fs.writeFileSync('config.json', JSON.stringify({httpPort: 5000, socketPort: 5050}), 'utf8');
-}
-const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
+import SocketHandler from "./server/handler/SocketHandler.mjs";
 
 const httpServer: HTTPServer = new HTTPServer();
 const wsServer: WSServer = new WSServer({
@@ -36,11 +32,10 @@ const wsServer: WSServer = new WSServer({
 });
 const socketServer: SocketServer = new SocketServer();
 
-
 PlatformServer.init({httpServer, wsServer, socketServer});
 httpServer.callHandler(new HTTPHandler());
 wsServer.addHandler(new WSHandler());
+socketServer.addHandler(new SocketHandler());
 
-
-httpServer.listen(config.httpPort);
-socketServer.listen(config.socketPort);
+httpServer.listen(PlatformServer.config.httpPort);
+socketServer.listen(PlatformServer.config.socketPort);

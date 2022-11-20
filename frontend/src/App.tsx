@@ -63,7 +63,7 @@ function App() {
 
     useEffect(() => {
         !async function () {
-            if (modelUniqueName !== null && modelUniqueName !== model?.uniqueName) {
+            if (modelUniqueName && modelUniqueName !== null && modelUniqueName !== model?.uniqueName) {
                 let loadedModel = await fetch('/api/model/' + modelUniqueName).then(r => r.json());
                 setModel(loadedModel);
             }

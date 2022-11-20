@@ -24,7 +24,7 @@ function Model({data}: { data: AppData }) {
                                 </Card.Text>
                             </Card.Body>
                         </Card>
-                        <Card className='card-upload'>
+                        <Card className='card-upload' style={{overflow: 'hidden'}}>
                             <Card.Body>
                                 <Card.Title>Input upload</Card.Title>
 

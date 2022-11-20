@@ -36,7 +36,7 @@ type ModelData = {
     name: string,
     uniqueName: string,
     config?: ConfigData,
-    history?: HistoryData
+    lastHistory?: HistoryData
     status: string
 }
 

@@ -76,11 +76,11 @@ class Model {
         return models.reduce((map: ModelMap, m: Model) => (map[m.path] = map[uniqueNameMap[m.path]] = m, map), {})
     }
 
-    static getModel(modelUniqueName: string): Model {
-        return this.modelMap[modelUniqueName];
+    static getModel(uniqueNameOrPath: string): Model {
+        return this.modelMap[uniqueNameOrPath];
     }
 
-    public get config(): object {
+    public get config(): any {
         return JSON.parse(fs.readFileSync(this.configPath, 'utf8'));
     }
 
@@ -90,6 +90,10 @@ class Model {
 
     public set data(data) {
         db.setModelData(this.path, data);
+    }
+
+    public get lastHistory(){
+        return db.getHistoryData(this.data.historyIndex as number);
     }
 
     public toSimpleData() {
@@ -105,7 +109,7 @@ class Model {
         return {
             ...this.toSimpleData(),
             config: this.config,
-            history: db.getHistoryData(this.data.historyIndex as number)
+            lastHistory: this.lastHistory
         }
     }
 }

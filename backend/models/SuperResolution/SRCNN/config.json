@@ -1,7 +1,7 @@
 {
   "name": "SRCNN",
   "explain": "CNN을 이용한 업스케일링 모델",
-  "container": "SRCNN",
+  "container": "test",
   "input": {
     "module": "GeneralSingleFileUploader",
     "options": {

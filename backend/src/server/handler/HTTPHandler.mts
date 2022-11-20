@@ -4,6 +4,8 @@ import HTTPServer from "../HTTPServer.mjs";
 import express, {NextFunction, Request, Response} from "express";
 import multer from 'multer';
 import PlatformServer from "../core/PlatformServer.mjs";
+import Docker, {Container, ContainerInfo, Exec} from "dockerode";
+import {IWSSocket} from "../types/Types.mjs";
 
 type File = Express.Multer.File & { webpath?: string };
 let db = Database.Instance;
@@ -30,38 +32,81 @@ class HTTPHandler {
             res.json(model.toFullData());
         });
 
-        httpServer.app.post('/api/upload', upload.fields([{name: 'files'}, {name: 'modelUniqueName'}]), function (req, res, next) {
+        httpServer.app.post('/api/upload', upload.fields([{name: 'files'}, {name: 'modelUniqueName'}]), async function (req, res, next) {
             let modelUniqueName = req.body.modelUniqueName;
             let model = Model.getModel(req.body.modelUniqueName);
-            if (model.data.status !== 'off') {
+            let modelData = model.data;
+
+            if (!(modelData.status === 'off' || modelData.status === 'error')) {
                 res.json({status: 'fail'});
                 return;
             } else {
                 res.json({status: 'success'});
             }
 
-            let modelData = model.data;
-            modelData.status = 'deploying';
+            function setModelDataWithUpdateModels(modelData: any, sockets: IWSSocket[] = PlatformServer.wsServer.sockets) {
+                model.data = {...model.data, ...modelData};
+                let rawModels = Model.getModels();
+                let models = rawModels.map(m => m.toSimpleData());
+                sockets.forEach(s => s.send(JSON.stringify({
+                    msg: 'UpdateModels',
+                    models
+                })));
+            }
+
             let files = req.files as { [fieldName: string]: File[] };
             let file = files['files'][0];
             file.originalname = Buffer.from(file.originalname, 'latin1').toString('utf8');
-            file.webpath = ['', ...file.path.split(/[/\\]/g)].join('/')
-
+            file.webpath = ['', ...file.path.split(/[/\\]/g)].join('/');
             let history = {
                 modelPath: model.path,
                 inputPath: file?.path,
                 inputInfo: file
             };
-            modelData.historyIndex = Database.Instance.addHistoryData(history);
+            model.data = {...model.data, historyIndex: Database.Instance.addHistoryData(history)};
 
-            model.data = modelData;
-            let rawModels = Model.getModels();
-            let models = rawModels.map(m => m.toSimpleData());
+            setModelDataWithUpdateModels({status: 'deploying'});
 
-            PlatformServer.wsServer.sockets.forEach(s => s.send(JSON.stringify({
-                msg: 'UpdateModels',
-                models
-            })));
+            let config = model.config;
+            let docker = new Docker(config.dockerServer ? config.dockerServer : PlatformServer.config.defaultDockerServer);
+            let containers = await docker.listContainers({all: true});
+            let containerInfo = containers.find(c => c.Names.some(n => n === '/' + config.container)) as ContainerInfo;
+            if (containerInfo) {
+                let container = docker.getContainer(containerInfo.Id);
+                async function exec(command:string){
+                    await new Promise(resolve => {
+                        container.exec({
+                            Cmd: ['/bin/bash', '-c', command],
+                            AttachStdin: true,
+                            AttachStdout: true
+                        }, async function (err, exec) {
+                            let stream = await (exec as Exec).start({hijack: true, stdin: true});
+                            stream.on('finish', resolve);
+                        });
+                    });
+                }
+                try {
+                    try {
+                        if (containerInfo.State === 'running') {
+                            await container.stop();
+                        }
+                    } catch (e) {
+                    }
+                    await container.start();
+                    await exec('rm -rf /opt/mctr');
+                    await exec('mkdir -p /opt/mctr/{o,i}');
+                    await container.putArchive('../controller/controller.tar', {path: '/opt/mctr/'});
+                    await exec(`chmod 777 /opt/mctr/controller-linux && /opt/mctr/controller-linux ${PlatformServer.config.socketExternalHost} ${PlatformServer.config.socketPort} ${Buffer.from(model.path).toString('base64')}`);
+                    setModelDataWithUpdateModels({status: 'running'});
+                } catch (e) {
+                    setModelDataWithUpdateModels({status: 'error'});
+                    console.error(e);
+                    return;
+                }
+            } else {
+                setModelDataWithUpdateModels({status: 'error'});
+                return;
+            }
 
             PlatformServer.wsServer.sockets.filter(s => s.data.path?.startsWith(`model/${modelUniqueName}`)).forEach(s => s.send(JSON.stringify({
                 msg: 'UpdateModel',

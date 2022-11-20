@@ -1,8 +1,20 @@
-/*
+import * as fs from 'fs';
 import Docker, {ContainerInfo, Exec} from "dockerode";
+
+class DockerController {
+    public async getContainer(docker:Docker){
+        let containers = await docker.listContainers();
+        let containerInfo = containers.find(c => c.Names.some(n => n.includes('/test'))) as ContainerInfo;
+        let container = docker.getContainer(containerInfo.Id);
+    }
+}
+
+export default DockerController;
+/*
+import DockerController, {ContainerInfo, Exec} from "dockerode";
 import tar from "tar";
 
-let docker = new Docker({host: 'abstr.net', port: 30001});
+let docker = new DockerController({host: 'abstr.net', port: 30001});
 !async function () {
     let containers = await docker.listContainers();
     let containerInfo = containers.find(c => c.Names.some(n => n.includes('/test'))) as ContainerInfo;

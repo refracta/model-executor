@@ -6,16 +6,18 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "start": "node build/index.js",
-    "pkg": "pkg . --debug"
+    "start": "node build/index.cjs",
+    "pkg": "pkg . --debug",
+    "pack": "npm run build && npm run pkg && ts-node src/compress.cts"
   },
   "author": "refracta",
   "license": "ISC",
   "bin": {
-    "app": "build/index.js"
+    "app": "build/index.cjs"
   },
   "devDependencies": {
     "@types/node": "^18.11.9",
+    "@types/tar": "^6.1.3",
     "pkg": "^5.8.0"
   },
   "pkg": {
@@ -23,5 +25,8 @@
       "experimental-modules"
     ]
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "tar": "^6.1.12"
+  }
 }

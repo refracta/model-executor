@@ -37,12 +37,12 @@ type IFile = File & { preview?: string };
 
 function GeneralSingleFileUploader({model}: { model: ModelData }) {
     const [files, setFiles] = useState<IFile[]>([]);
-    const [hideDropzone, setHideDropzone] = useState<boolean>(model.status !== 'off');
+    const [hideDropzone, setHideDropzone] = useState<boolean>(!(model.status === 'off' || model.status === 'error'));
     const [uploadExplain, setUploadExplain] = useState<string>('');
     useEffect(() => {
         setFiles([]);
-        setUploadExplain('');
-        setHideDropzone(model.status != 'off');
+        setUploadExplain(model.status === 'error' ? 'Model executing error...' : '');
+        setHideDropzone(!(model.status === 'off' || model.status === 'error'));
     }, [model]);
 
     const {getRootProps, getInputProps} = useDropzone({
@@ -71,11 +71,11 @@ function GeneralSingleFileUploader({model}: { model: ModelData }) {
                 body: data,
             }).then(r => r.json());
             if (result.status === 'success') {
-                setUploadExplain('Done!');
+                setUploadExplain('Upload done!');
             } else {
                 setFiles([]);
                 setHideDropzone(false);
-                setUploadExplain('Error');
+                setUploadExplain('Upload error...');
             }
 
         }
@@ -101,7 +101,7 @@ function GeneralSingleFileUploader({model}: { model: ModelData }) {
         return () => files.forEach((file: IFile) => URL.revokeObjectURL(file.preview as string));
     }, []);
 
-    if (model.status === 'off') {
+    if (model.status === 'off' || model.status === 'error') {
         return (
             <section className="container">
                 <div {...getRootProps({className: 'dropzone'})} style={hideDropzone ? {display: 'none'} : {}}
@@ -116,7 +116,7 @@ function GeneralSingleFileUploader({model}: { model: ModelData }) {
             </section>
         );
     } else {
-        let inputInfo = model.history?.inputInfo;
+        let inputInfo = model.lastHistory?.inputInfo;
         return <>
             <span style={{fontWeight: 'bold'}}>Filename: </span><span>{inputInfo.originalname}</span>
             <br/>
@@ -125,6 +125,7 @@ function GeneralSingleFileUploader({model}: { model: ModelData }) {
             <span style={{fontWeight: 'bold'}}>Size: </span><span>{inputInfo.size}</span>
             <br/>
             {inputInfo.mimetype.startsWith('image') ? <img src={inputInfo.webpath} style={{
+                objectFit: 'contain',
                 maxHeight: '40vh',
                 maxWidth: '100%',
                 overflow: 'hidden',
