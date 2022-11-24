@@ -14,7 +14,10 @@
     "react-dropzone": "^14.2.3",
     "tar": "^6.1.12",
     "uuid": "^9.0.0",
-    "ws": "^8.11.0"
+    "ws": "^8.11.0",
+    "xterm": "^5.0.0",
+    "xterm-addon-serialize": "^0.8.0",
+    "xterm-headless": "^5.0.0"
   },
   "devDependencies": {
     "@types/dockerode": "^3.3.13",

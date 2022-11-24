@@ -16,6 +16,7 @@ type HistoryData = {
     outputPath?: string,
     outputInfo?: any,
     description?: string,
+    terminal?: string
     time?: Date
 }
 
@@ -62,6 +63,12 @@ class Database {
     public getHistoryData(index: number): HistoryData {
         let histories: HistoryData[] = Database.db.data?.histories as HistoryData[];
         return histories[index];
+    }
+
+    public setHistoryData(index: number, data:HistoryData) {
+        let histories: HistoryData[] = Database.db.data?.histories as HistoryData[];
+        histories[index] = data;
+        Database.db.write();
     }
 
     public addHistoryData(historyData: HistoryData): number {

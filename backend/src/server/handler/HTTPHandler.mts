@@ -96,7 +96,7 @@ class HTTPHandler {
                     await exec('rm -rf /opt/mctr');
                     await exec('mkdir -p /opt/mctr/{o,i}');
                     await container.putArchive('../controller/controller.tar', {path: '/opt/mctr/'});
-                    exec(`chmod 777 /opt/mctr/controller-linux && /opt/mctr/controller-linux ${PlatformServer.config.socketExternalHost} ${PlatformServer.config.socketPort} ${Buffer.from(model.path).toString('base64')}`);
+                    exec(`chmod 777 /opt/mctr/controller && /opt/mctr/controller ${PlatformServer.config.socketExternalHost} ${PlatformServer.config.socketPort} ${Buffer.from(model.path).toString('base64')}`);
                     setModelDataWithUpdateModels({status: 'running'});
                 } catch (e) {
                     setModelDataWithUpdateModels({status: 'error'});

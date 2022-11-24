@@ -24,9 +24,7 @@ class SocketServer {
             let addressInfo = socket.address() as SocketAddress;
             console.log('SocketServer: ' + addressInfo.address + " connected.");
 
-            socket.on('ready', () => {
-                this.handlers.forEach(h => h.onReady?.(this, socket));
-            });
+            this.handlers.forEach(h => h.onReady?.(this, socket));
 
             socket.on('data', (data: Buffer) => {
                 this.handlers.forEach(h => h.onData?.(this, socket, data));

@@ -27,6 +27,7 @@ type HistoryData = {
     outputPath?: string,
     outputInfo?: any,
     description?: string,
+    terminal?: string,
     time?: Date
 }
 

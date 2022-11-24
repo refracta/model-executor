@@ -92,9 +92,14 @@ class Model {
         db.setModelData(this.path, data);
     }
 
-    public get lastHistory(){
+    public get lastHistory() {
         return db.getHistoryData(this.data.historyIndex as number);
     }
+
+    public set lastHistory(data) {
+        db.setHistoryData(this.data.historyIndex as number, data);
+    }
+
 
     public toSimpleData() {
         return {

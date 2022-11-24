@@ -5,10 +5,14 @@ import Model from "../../Model.mjs";
 import Database from "../../Database.mjs";
 import * as fs from "fs";
 import * as stream from "stream";
+import XTerm from 'xterm-headless';
+
+const {Terminal} = XTerm;
+import {SerializeAddon} from "xterm-addon-serialize";
 
 class SocketHandler {
     public onReady(server: SocketServer, socket: ISocket) {
-
+        socket.data.buffer = '';
     }
 
     private async sendFile(socket: ISocket, localPath: string, filePath: string) {
@@ -27,7 +31,25 @@ class SocketHandler {
 
     public async onData(server: SocketServer, socket: ISocket, data: Buffer) {
         if (socket.data.mode !== 'File') {
-            let message = JSON.parse(data.toString());
+            let dataString = socket.data.buffer + data.toString();
+            let splitString = dataString.split('\0');
+            let message:any;
+            let messageString;
+            if (splitString.length > 1) {
+                for(let split of splitString){
+                    await this.onData(server, socket, Buffer.from(split));
+                }
+                return;
+            } else {
+                messageString = splitString[0];
+                try {
+                    message = JSON.parse(messageString);
+                } catch (e) {
+                    socket.data.buffer = messageString;
+                    return;
+                }
+            }
+
             if (message.msg === 'Launch') {
                 socket.data.modelPath = message.modelPath;
                 let model = Model.getModel(socket.data.modelPath);
@@ -37,6 +59,12 @@ class SocketHandler {
                     input: history.inputInfo,
                     parameters: {}
                 }), '/opt/mctr/i/info');
+
+                socket.data.terminal = new Terminal({allowProposedApi: true});
+                socket.data.terminalSerializer = new SerializeAddon();
+                socket.data.terminal.loadAddon(socket.data.terminalSerializer);
+
+                socket.write(JSON.stringify({msg: 'LaunchModel'}));
             } else if (message.msg === 'FileWait') {
                 socket.data.readStream.pipe(socket, {end: false});
                 socket.data.readStream.on('end', () => {
@@ -45,6 +73,15 @@ class SocketHandler {
             } else if (message.msg === 'FileReceiveEnd') {
                 console.log(message);
                 socket.data.fileSendResolver(void 0);
+            } else if (message.msg === 'Terminal') {
+                let model = Model.getModel(socket.data.modelPath);
+                let modelUniqueName = Model.uniqueNameMap[model.path];
+                let history = model.lastHistory;
+                socket.data.terminal.write(message.data);
+                history.terminal = socket.data.terminalSerializer.serialize();
+                model.lastHistory = history;
+
+                PlatformServer.wsServer.sockets.filter(s => s.data.path?.startsWith(`model/${modelUniqueName}`)).forEach(s => s.send(JSON.stringify(message)));
             }
         }
     }

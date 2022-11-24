@@ -6,13 +6,17 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import {AppData, ModelData} from "../../types/Types";
 import IOModule from "../io/IOModule";
+import Terminal from "../terms/Terminal";
+import {FitAddon} from "xterm-addon-fit";
 
 // JSP(param1, param2) <= parametr
 function Model({data}: { data: AppData }) {
+    let fitAddon = new FitAddon();
     let model = data.model as ModelData;
     let config = model?.config;
+    let fit = fitAddon.fit.bind(fitAddon);
     return (
-        <Split className="split-container" sizes={[75, 25]} direction="vertical">
+        <Split className="split-container" sizes={[75, 25]} direction="vertical" onDrag={fit} onDragEnd={fit} onDragExit={fit}>
             <div className="main-content-container">
                 <Row xs={1} md={2} className="h-100">
                     <Col className='left-col'>
@@ -45,7 +49,7 @@ function Model({data}: { data: AppData }) {
                 </Row>
             </div>
             <div className="terminal-container">
-                <h1>Terminal Container</h1>
+                <Terminal data={data} fitAddon={fitAddon}/>
             </div>
         </Split>
     );
