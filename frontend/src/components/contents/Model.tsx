@@ -40,9 +40,7 @@ function Model({data}: { data: AppData }) {
                         <Card className='card-result'>
                             <Card.Body>
                                 <Card.Title>Output</Card.Title>
-                                <Card.Text>
-                                    Output format: {config!.output.options.format.join(', ')}
-                                </Card.Text>
+                                <IOModule moduleName={config!.output.module} model={model}></IOModule>
                             </Card.Body>
                         </Card>
                     </Col>

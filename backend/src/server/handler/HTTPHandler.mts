@@ -93,10 +93,11 @@ class HTTPHandler {
                     } catch (e) {
                     }
                     await container.start();
-                    await exec('rm -rf /opt/mctr');
+                    // await exec('rm -rf /opt/mctr');
                     await exec('mkdir -p /opt/mctr/{o,i}');
                     await container.putArchive('../controller/controller.tar', {path: '/opt/mctr/'});
-                    exec(`chmod 777 /opt/mctr/controller && /opt/mctr/controller ${PlatformServer.config.socketExternalHost} ${PlatformServer.config.socketPort} ${Buffer.from(model.path).toString('base64')}`);
+                    await exec('rm -rf /opt/mctr/debug');
+                    exec(`chmod 777 /opt/mctr/controller && /opt/mctr/controller ${PlatformServer.config.socketExternalHost} ${PlatformServer.config.socketPort} ${Buffer.from(model.path).toString('base64')} >> /opt/mctr/debug 2>&1`);
                     setModelDataWithUpdateModels({status: 'running'});
                 } catch (e) {
                     setModelDataWithUpdateModels({status: 'error'});
