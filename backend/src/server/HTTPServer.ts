@@ -5,19 +5,19 @@ import {HTTPHandler} from "../types/Types";
 type Server = http.Server;
 
 export default class HTTPServer {
-    public readonly app: Application;
-    public readonly server: Server;
+    readonly app: Application;
+    readonly server: Server;
 
     constructor() {
         this.app = express();
         this.server = http.createServer(this.app);
     }
 
-    public callHandler(httpHandler: HTTPHandler) {
+    callHandler(httpHandler: HTTPHandler) {
         httpHandler.initRoute(this);
     }
 
-    public listen(port: number) {
+    listen(port: number) {
         this.server.listen(port, () => {
             console.log(`HTTPServer Listening on ${port}.`);
         });

@@ -5,11 +5,11 @@ import {WebSocketHandler} from "../types/Interfaces";
 import WSManager from "./sender/WSManager";
 
 export default class WSServer<SocketData, Manager extends WSManager> {
-    public readonly server: WebSocketServer;
-    public readonly manager: Manager;
-    public readonly sockets: (IWSocket & { data: SocketData })[] = [];
-    public readonly socketsMap: { [id: string]: IWSocket & { data: SocketData } } = {};
-    public readonly handlers: WebSocketHandler<any, any>[] = [];
+    readonly server: WebSocketServer;
+    readonly manager: Manager;
+    readonly sockets: (IWSocket & { data: SocketData })[] = [];
+    readonly socketsMap: { [id: string]: IWSocket & { data: SocketData } } = {};
+    readonly handlers: WebSocketHandler<any, any>[] = [];
 
     constructor(options: ServerOptions, manager: Manager) {
         this.server = new WebSocketServer(options);
@@ -44,11 +44,11 @@ export default class WSServer<SocketData, Manager extends WSManager> {
         this.manager.init(this);
     }
 
-    public addHandler(handler: WebSocketHandler<any, any>) {
+    addHandler(handler: WebSocketHandler<any, any>) {
         this.handlers.push(handler);
     }
 
-    public removeHandler(handler: WebSocketHandler<any, any>) {
+    removeHandler(handler: WebSocketHandler<any, any>) {
         let index = this.handlers.indexOf(handler);
         if (index > -1) {
             this.sockets.splice(index, 1);

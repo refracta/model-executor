@@ -6,11 +6,11 @@ export default class Database {
     private static adapter: JSONFileSync<Data>;
     private static db: LowSync<Data>;
 
-    public static get Instance() {
+    static get Instance() {
         return this.instance || (this.instance = new this());
     }
 
-    public static async init(adapter: JSONFileSync<Data>) {
+    static async init(adapter: JSONFileSync<Data>) {
         Database.adapter = adapter;
         Database.db = new LowSync<Data>(Database.adapter);
         Database.db.read();
@@ -18,7 +18,7 @@ export default class Database {
         Database.db.write();
     }
 
-    public getModelData(path: string): ModelData {
+    getModelData(path: string): ModelData {
         let models: Models = Database.db.data?.models as Models;
         let modelData: ModelData;
         if (!models[path]) {
@@ -29,24 +29,24 @@ export default class Database {
         return modelData;
     }
 
-    public setModelData(path: string, modelData: ModelData) {
+    setModelData(path: string, modelData: ModelData) {
         let models: Models = Database.db.data?.models as Models;
         models[path] = modelData;
         Database.db.write();
     }
 
-    public getHistoryData(index: number): HistoryData {
+    getHistoryData(index: number): HistoryData {
         let histories: HistoryData[] = Database.db.data?.histories as HistoryData[];
         return histories[index];
     }
 
-    public setHistoryData(index: number, data: HistoryData) {
+    setHistoryData(index: number, data: HistoryData) {
         let histories: HistoryData[] = Database.db.data?.histories as HistoryData[];
         histories[index] = data;
         Database.db.write();
     }
 
-    public addHistoryData(historyData: HistoryData): number {
+    addHistoryData(historyData: HistoryData): number {
         let histories: HistoryData[] = Database.db.data?.histories as HistoryData[];
         histories.push(historyData);
         return histories.length - 1;

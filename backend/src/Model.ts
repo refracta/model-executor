@@ -11,12 +11,12 @@ type UniqueNameMap = {
 type ModelMap = { [index: string]: Model };
 
 export default class Model {
-    public static uniqueNameMap: UniqueNameMap;
-    public static modelMap: ModelMap;
-    public readonly path: string;
-    public readonly hierarchy: string[];
-    public readonly name: string;
-    public readonly configPath: string;
+    static uniqueNameMap: UniqueNameMap;
+    static modelMap: ModelMap;
+    readonly path: string;
+    readonly hierarchy: string[];
+    readonly name: string;
+    readonly configPath: string;
 
     static {
         Model.updateMaps();
@@ -29,31 +29,31 @@ export default class Model {
         this.configPath = this.path + '/' + 'config.json';
     }
 
-    public get config(): any {
+    get config(): any {
         return JSON.parse(fs.readFileSync(this.configPath, 'utf8'));
     }
 
-    public get data() {
+    get data() {
         return db.getModelData(this.path);
     }
 
-    public set data(data) {
+    set data(data) {
         db.setModelData(this.path, data);
     }
 
-    public get lastHistory() {
+    get lastHistory() {
         return db.getHistoryData(this.data.historyIndex as number);
     }
 
-    public set lastHistory(data) {
+    set lastHistory(data) {
         db.setHistoryData(this.data.historyIndex as number, data);
     }
 
-    public get uniqueName() {
+    get uniqueName() {
         return Model.uniqueNameMap[this.path];
     }
 
-    public static getModels(path: string = 'models' + '/'): Model[] {
+    static getModels(path: string = 'models' + '/'): Model[] {
         let models: Model[] = [];
         let dir: string[] = fs.readdirSync(path);
         if (dir.includes('config.json')) {
@@ -69,7 +69,7 @@ export default class Model {
         return models;
     }
 
-    public static updateMaps() {
+    static updateMaps() {
         let models = Model.getModels();
         this.uniqueNameMap = Model.getUniqueNameMap(models);
         this.modelMap = Model.getModelMap(models, this.uniqueNameMap);
@@ -101,7 +101,7 @@ export default class Model {
         return models.reduce((map: ModelMap, m: Model) => (map[m.path] = map[uniqueNameMap[m.path]] = m, map), {})
     }
 
-    public toSimpleData() {
+    toSimpleData() {
         return {
             hierarchy: this.hierarchy,
             name: this.name,
@@ -110,7 +110,7 @@ export default class Model {
         };
     }
 
-    public toFullData() {
+    toFullData() {
         return {
             ...this.toSimpleData(),
             config: this.config,

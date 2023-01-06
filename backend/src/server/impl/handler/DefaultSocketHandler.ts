@@ -71,12 +71,12 @@ handles[SocketMessageType.File] = (server: DefaultSocketServer, socket: DefaultS
 }
 
 export default class DefaultSocketHandler implements SocketHandler<DefaultSocketServer, DefaultSocket> {
-    public onReady(server: DefaultSocketServer, socket: DefaultSocket) {
+    onReady(server: DefaultSocketServer, socket: DefaultSocket) {
         socket.data.buffer = '';
         socket.data.receiveMode = SocketReceiveMode.JSON;
     }
 
-    public onData(server: DefaultSocketServer, socket: DefaultSocket, data: Buffer) {
+    onData(server: DefaultSocketServer, socket: DefaultSocket, data: Buffer) {
         if (socket.data.receiveMode === SocketReceiveMode.JSON) {
             let dataString = socket.data.buffer + data.toString();
             let splitString = dataString.split('\0').filter(s => s.length > 0);
@@ -119,7 +119,7 @@ export default class DefaultSocketHandler implements SocketHandler<DefaultSocket
     }
 
 
-    public onClose(server: DefaultSocketServer, socket: DefaultSocket, hadError: boolean) {
+    onClose(server: DefaultSocketServer, socket: DefaultSocket, hadError: boolean) {
 
     }
 }

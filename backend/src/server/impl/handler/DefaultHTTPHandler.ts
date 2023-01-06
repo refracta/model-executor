@@ -11,7 +11,7 @@ import DockerUtils from "../../../utils/DockerUtils";
 type File = Express.Multer.File & { webPath?: string };
 const upload = multer({dest: 'resources/'});
 export default class DefaultHTTPHandler implements HTTPHandler {
-    public initRoute(httpServer: HTTPServer) {
+    initRoute(httpServer: HTTPServer) {
         httpServer.app.use('/resources', express.static('resources'));
 
         httpServer.app.get('/api/models', (req: Request, res: Response) => {

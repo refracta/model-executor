@@ -3,24 +3,24 @@ import fs from "fs";
 import {DefaultSocketServer, DefaultWSServer} from "../../types/Types";
 
 export default class PlatformServer {
-    public static httpServer: HTTPServer;
-    public static wsServer: DefaultWSServer;
-    public static socketServer: DefaultSocketServer;
-    public static config: any;
+    static httpServer: HTTPServer;
+    static wsServer: DefaultWSServer;
+    static socketServer: DefaultSocketServer;
+    static config: any;
     private static instance: PlatformServer;
 
-    public static get Instance() {
+    static get Instance() {
         return this.instance || (this.instance = new this());
     }
 
-    public static init(params: { httpServer: HTTPServer, wsServer: DefaultWSServer, socketServer: DefaultSocketServer }) {
+    static init(params: { httpServer: HTTPServer, wsServer: DefaultWSServer, socketServer: DefaultSocketServer }) {
         this.httpServer = params.httpServer;
         this.wsServer = params.wsServer;
         this.socketServer = params.socketServer;
         this.loadConfig();
     }
 
-    public static loadConfig() {
+    static loadConfig() {
         if (!fs.existsSync('config.json')) {
             fs.writeFileSync('config.json', JSON.stringify({
                 httpPort: 0,

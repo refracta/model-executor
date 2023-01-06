@@ -32,17 +32,17 @@ handles[WSMessageType.TerminalResize] = (server: DefaultWSServer, socket: Defaul
 }
 
 export default class DefaultWSHandler implements WebSocketHandler<DefaultWSServer, DefaultWSocket> {
-    public onReady(server: DefaultWSServer, socket: DefaultWSocket) {
+    onReady(server: DefaultWSServer, socket: DefaultWSocket) {
         PlatformServer.socketServer.manager.sendHello();
     }
 
-    public onMessage(server: DefaultWSServer, socket: DefaultWSocket, rawData: RawData, isBinary: boolean) {
+    onMessage(server: DefaultWSServer, socket: DefaultWSocket, rawData: RawData, isBinary: boolean) {
         let message = JSON.parse(rawData.toString());
         console.log('DefaultWSHandler.onMessage', message);
         handles[message.msg](server, socket, message);
     }
 
-    public onClose(server: DefaultWSServer, socket: DefaultWSocket, code: number, reason: Buffer) {
+    onClose(server: DefaultWSServer, socket: DefaultWSocket, code: number, reason: Buffer) {
     }
 }
 

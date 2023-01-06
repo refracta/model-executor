@@ -5,11 +5,11 @@ import {SocketHandler} from "../types/Interfaces";
 import SocketManager from "./sender/SocketManager";
 
 export default class SocketServer<SocketData, Manager extends SocketManager> {
-    public readonly server: Server;
-    public readonly manager: Manager;
-    public readonly sockets: (ISocket & { data: SocketData })[] = [];
-    public readonly socketsMap: { [id: string]: ISocket & { data: SocketData } } = {};
-    public readonly handlers: SocketHandler<any, any>[] = [];
+    readonly server: Server;
+    readonly manager: Manager;
+    readonly sockets: (ISocket & { data: SocketData })[] = [];
+    readonly socketsMap: { [id: string]: ISocket & { data: SocketData } } = {};
+    readonly handlers: SocketHandler<any, any>[] = [];
 
     constructor(manager: Manager) {
         this.server = net.createServer(((socket: ISocket & { data: SocketData }) => {
@@ -46,18 +46,18 @@ export default class SocketServer<SocketData, Manager extends SocketManager> {
         this.manager.init(this);
     }
 
-    public addHandler(handler: SocketHandler<any, any>) {
+    addHandler(handler: SocketHandler<any, any>) {
         this.handlers.push(handler);
     }
 
-    public removeHandler(handler: SocketHandler<any, any>) {
+    removeHandler(handler: SocketHandler<any, any>) {
         let index = this.handlers.indexOf(handler);
         if (index > -1) {
             this.sockets.splice(index, 1);
         }
     }
 
-    public listen(port: number) {
+    listen(port: number) {
         this.server.listen(port, function () {
             console.log(`SocketServer: Listening on ${port}.`);
         });

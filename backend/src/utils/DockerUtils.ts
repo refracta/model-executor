@@ -1,14 +1,14 @@
 import Docker, {Container, ContainerInfo, Exec} from "dockerode";
 
 export default class DockerUtils {
-    public static async getContainerByName(docker: Docker, name: string): Promise<{ container: Container, containerInfo: ContainerInfo }> {
+    static async getContainerByName(docker: Docker, name: string): Promise<{ container: Container, containerInfo: ContainerInfo }> {
         let containers = await docker.listContainers({all: true});
         let containerInfo = containers.find(c => c.Names.some(n => n === '/' + name)) as ContainerInfo;
         let container = docker.getContainer(containerInfo.Id);
         return {container, containerInfo};
     }
 
-    public static exec(container: Container, command: string) {
+    static exec(container: Container, command: string) {
         return new Promise(resolve => {
             container.exec({
                 Cmd: ['/bin/bash', '-c', command],
