@@ -7,7 +7,6 @@ import {WebSocketHandler} from "../../../types/Interfaces";
 type Handle = (server: DefaultWSServer, socket: DefaultWSocket, data: any) => void;
 let handles: { [messageType: string]: Handle } = {};
 
-// TODO: Front-side Refactoring
 handles[WSMessageType.Path] = (server: DefaultWSServer, socket: DefaultWSocket, message: any) => {
     socket.data.path = message.path;
     delete socket.data.modelUniqueName;
