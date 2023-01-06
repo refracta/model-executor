@@ -1,24 +1,70 @@
 import {Socket as NetSocket} from "net";
-import {RawData, WebSocket} from "ws";
+import {WebSocket} from "ws";
 import WSServer from "../server/WSServer";
 import SocketServer from "../server/SocketServer";
 import HTTPServer from "../server/HTTPServer";
-import DefaultSocketSender from "../server/impl/sender/DefaultSocketSender";
-import DefaultWSSender from "../server/impl/sender/DefaultWSSender";
+import DefaultSocketManager from "../server/impl/manager/DefaultSocketManager";
+import DefaultWSManager from "../server/impl/manager/DefaultWSManager";
+import {ReadStream, WriteStream} from "fs";
+import stream from "stream";
+import {Terminal} from "xterm-headless";
+import {SerializeAddon} from "xterm-addon-serialize";
 
 export interface HTTPHandler {
     initRoute: (server: HTTPServer) => void,
 }
 
 export type ISocket = NetSocket & { id: string };
-export type DefaultSocketData = any;
-export type DefaultSocket = ISocket & {data : DefaultSocketData};
-export type IWSocket = WebSocket & { id: string, req: any };
-export type DefaultWSData = any;
-export type DefaultWSocket = IWSocket & {data : DefaultWSData};
+type Resolver = (value?: unknown) => void;
+type ReadStreamClose = (callback?: (err?: NodeJS.ErrnoException | null) => void) => void;
+export type DefaultSocketData = {
+    buffer: string,
+    receiveMode: SocketReceiveMode,
+    receivedBytes: number,
+    fileSize: number,
+    writeStream: stream.Writable,
+    readStream: stream.Readable & { close?: ReadStreamClose },
+    fileReceiveResolver: Resolver,
+    fileSendResolver: Resolver,
+    modelPath: string,
+    terminal: Terminal,
+    terminalSerializer: SerializeAddon
+};
 
-export type DefaultSocketServer = SocketServer<DefaultSocketData, DefaultSocketSender>;
-export type DefaultWSServer = WSServer<DefaultWSData, DefaultWSSender>;
+export type DefaultSocket = ISocket & { data: DefaultSocketData };
+export type IWSocket = WebSocket & { id: string, req: any };
+export type DefaultWSData = {
+    modelUniqueName?: string;
+    path: string
+};
+export type DefaultWSocket = IWSocket & { data: DefaultWSData };
+
+export type DefaultSocketServer = SocketServer<DefaultSocketData, DefaultSocketManager>;
+export type DefaultWSServer = WSServer<DefaultWSData, DefaultWSManager>;
+
+export enum SocketMessageType {
+    Hello = 'Hello',
+    Launch = 'Launch',
+    FileWait = 'FileWait',
+    FileReceiveEnd = 'FileReceiveEnd',
+    Terminal = 'Terminal',
+    ProcessEnd = 'ProcessEnd',
+    File = 'File',
+    RequestFile = 'RequestFile'
+}
+
+export enum WSMessageType {
+    Path = 'Path',
+    TerminalResize = 'TerminalResize',
+    UpdateModel = 'UpdateModel',
+    UpdateModels = 'UpdateModels'
+}
+
+export enum SocketReceiveMode {
+    JSON,
+    FILE
+}
+
 
 export type ModelData = {
     status: string,

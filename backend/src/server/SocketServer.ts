@@ -1,17 +1,17 @@
-import net, {Server, Socket, SocketAddress} from 'net';
-import {v4 as uuidv4} from 'uuid';
+import net, {Server, Socket, SocketAddress} from "net";
+import {v4 as uuidv4} from "uuid";
 import {ISocket} from "../types/Types";
 import {SocketHandler} from "../types/Interfaces";
-import SocketSender from "./sender/SocketSender";
+import SocketManager from "./sender/SocketManager";
 
-export default class SocketServer<SocketData, Sender extends SocketSender> {
+export default class SocketServer<SocketData, Manager extends SocketManager> {
     public readonly server: Server;
-    public readonly sender: Sender;
+    public readonly manager: Manager;
     public readonly sockets: (ISocket & { data: SocketData })[] = [];
     public readonly socketsMap: { [id: string]: ISocket & { data: SocketData } } = {};
     public readonly handlers: SocketHandler<any, any>[] = [];
 
-    constructor(sender: Sender) {
+    constructor(manager: Manager) {
         this.server = net.createServer(((socket: ISocket & { data: SocketData }) => {
             socket.id = uuidv4();
             socket.data = {} as SocketData;
@@ -19,7 +19,7 @@ export default class SocketServer<SocketData, Sender extends SocketSender> {
             this.sockets.push(socket);
 
             let addressInfo = socket.address() as SocketAddress;
-            console.log('SocketServer: ' + addressInfo.address + " connected.");
+            console.log('SocketServer: ' + addressInfo.address + ' connected.');
 
             this.handlers.forEach(h => h.onReady?.(this, socket));
 
@@ -42,8 +42,8 @@ export default class SocketServer<SocketData, Sender extends SocketSender> {
             console.error('SocketServer Error:' + err);
         });
 
-        this.sender = sender;
-        this.sender.init(this);
+        this.manager = manager;
+        this.manager.init(this);
     }
 
     public addHandler(handler: SocketHandler<any, any>) {

@@ -2,7 +2,7 @@ import Database from "../../../Database";
 import Model from "../../../Model";
 import HTTPServer from "../../HTTPServer";
 import express, {Request, Response} from "express";
-import multer from 'multer';
+import multer from "multer";
 import PlatformServer from "../../core/PlatformServer";
 import Docker from "dockerode";
 import {HTTPHandler} from "../../../types/Types";
@@ -45,14 +45,14 @@ export default class DefaultHTTPHandler implements HTTPHandler {
                 inputInfo: file
             });
             model.data = {...model.data, status: 'deploying', historyIndex};
-            PlatformServer.wsServer.sender.sendUpdateModels();
+            PlatformServer.wsServer.manager.sendUpdateModels();
 
             let config = model.config;
             let docker = new Docker(config.dockerServer ? config.dockerServer : PlatformServer.config.defaultDockerServer);
             let {container, containerInfo} = await DockerUtils.getContainerByName(docker, config.container);
             if (!containerInfo) {
                 model.data = {...model.data, status: 'error'};
-                PlatformServer.wsServer.sender.sendUpdateModels();
+                PlatformServer.wsServer.manager.sendUpdateModels();
                 return;
             }
 
@@ -66,15 +66,16 @@ export default class DefaultHTTPHandler implements HTTPHandler {
                     await DockerUtils.exec(container, `chmod 777 /opt/mctr/controller && /opt/mctr/controller ${PlatformServer.config.socketExternalHost} ${PlatformServer.config.socketPort} ${Buffer.from(model.path).toString('base64')} >> /opt/mctr/debug 2>&1`);
                 });
                 model.data = {...model.data, status: 'running'};
-                PlatformServer.wsServer.sender.sendUpdateModels();
+                PlatformServer.wsServer.manager.sendUpdateModels();
             } catch (e) {
                 console.error(e);
                 model.data = {...model.data, status: 'error'};
-                PlatformServer.wsServer.sender.sendUpdateModels();
+                PlatformServer.wsServer.manager.sendUpdateModels();
                 return;
             }
 
-            PlatformServer.wsServer.sender.sendUpdateModel(model);
+            let sockets = PlatformServer.wsServer.manager.getModelSockets(model);
+            PlatformServer.wsServer.manager.sendUpdateModel(model, sockets);
         });
     }
 }

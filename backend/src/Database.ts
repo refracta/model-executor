@@ -1,16 +1,14 @@
-import {LowSync, JSONFileSync, Adapter} from '@commonify/lowdb'
-import Model from "./Model";
+import {JSONFileSync, LowSync} from "@commonify/lowdb"
 import {Data, HistoryData, ModelData, Models} from "./types/Types";
 
 export default class Database {
     private static instance: Database;
+    private static adapter: JSONFileSync<Data>;
+    private static db: LowSync<Data>;
 
     public static get Instance() {
         return this.instance || (this.instance = new this());
     }
-
-    private static adapter: JSONFileSync<Data>;
-    private static db: LowSync<Data>;
 
     public static async init(adapter: JSONFileSync<Data>) {
         Database.adapter = adapter;

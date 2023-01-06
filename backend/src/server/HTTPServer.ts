@@ -1,4 +1,4 @@
-import express, {Application} from 'express';
+import express, {Application} from "express";
 import * as http from "http";
 import {HTTPHandler} from "../types/Types";
 

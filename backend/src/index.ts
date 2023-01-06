@@ -4,14 +4,14 @@ import DefaultHTTPHandler from "./server/impl/handler/DefaultHTTPHandler";
 import PlatformServer from "./server/core/PlatformServer";
 import DefaultWSHandler from "./server/impl/handler/DefaultWSHandler";
 import DefaultSocketHandler from "./server/impl/handler/DefaultSocketHandler";
-import DefaultWSSender from "./server/impl/sender/DefaultWSSender";
-import DefaultSocketSender from "./server/impl/sender/DefaultSocketSender";
+import DefaultWSManager from "./server/impl/manager/DefaultWSManager";
+import DefaultSocketManager from "./server/impl/manager/DefaultSocketManager";
 import {DefaultSocketServer, DefaultWSServer} from "./types/Types";
 import HTTPServer from "./server/HTTPServer";
 
 const httpServer: HTTPServer = new HTTPServer();
 const wsServer: DefaultWSServer = new WSServer({
-    server: httpServer.server, path: "/websocket",
+    server: httpServer.server, path: '/websocket',
     perMessageDeflate: {
         zlibDeflateOptions: {
             // See zlib defaults.
@@ -31,8 +31,8 @@ const wsServer: DefaultWSServer = new WSServer({
         threshold: 1024 // Size (in bytes) below which messages
         // should not be compressed.
     }
-}, new DefaultWSSender());
-const socketServer: DefaultSocketServer = new SocketServer(new DefaultSocketSender());
+}, new DefaultWSManager());
+const socketServer: DefaultSocketServer = new SocketServer(new DefaultSocketManager());
 
 PlatformServer.init({httpServer, wsServer, socketServer});
 httpServer.callHandler(new DefaultHTTPHandler());
