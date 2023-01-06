@@ -1,5 +1,5 @@
 {
-  "include": [
+  /*"include": [
     "src"
   ],
   "compilerOptions": {
@@ -18,5 +18,14 @@
   "ts-node": {
     "esm": true,
     "experimentalSpecifierResolution": true
+  }*/
+  "compilerOptions": {
+    "lib": ["es5", "es6", "dom"],
+    "target": "es5",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
   }
 }

@@ -1,14 +1,16 @@
-import HTTPServer from "./server/HTTPServer.mjs";
-import SocketServer from "./server/SocketServer.mjs";
-import WSServer from "./server/WSServer.mjs";
-import HTTPHandler from "./server/handler/HTTPHandler.mjs";
-import PlatformServer from "./server/core/PlatformServer.mjs";
-import * as fs from "fs";
-import WSHandler from "./server/handler/WSHandler.mjs";
-import SocketHandler from "./server/handler/SocketHandler.mjs";
+import SocketServer from "./server/SocketServer";
+import WSServer from "./server/WSServer";
+import DefaultHTTPHandler from "./server/impl/handler/DefaultHTTPHandler";
+import PlatformServer from "./server/core/PlatformServer";
+import DefaultWSHandler from "./server/impl/handler/DefaultWSHandler";
+import DefaultSocketHandler from "./server/impl/handler/DefaultSocketHandler";
+import DefaultWSSender from "./server/impl/sender/DefaultWSSender";
+import DefaultSocketSender from "./server/impl/sender/DefaultSocketSender";
+import {DefaultSocketServer, DefaultWSServer} from "./types/Types";
+import HTTPServer from "./server/HTTPServer";
 
 const httpServer: HTTPServer = new HTTPServer();
-const wsServer: WSServer = new WSServer({
+const wsServer: DefaultWSServer = new WSServer({
     server: httpServer.server, path: "/websocket",
     perMessageDeflate: {
         zlibDeflateOptions: {
@@ -29,13 +31,13 @@ const wsServer: WSServer = new WSServer({
         threshold: 1024 // Size (in bytes) below which messages
         // should not be compressed.
     }
-});
-const socketServer: SocketServer = new SocketServer();
+}, new DefaultWSSender());
+const socketServer: DefaultSocketServer = new SocketServer(new DefaultSocketSender());
 
 PlatformServer.init({httpServer, wsServer, socketServer});
-httpServer.callHandler(new HTTPHandler());
-wsServer.addHandler(new WSHandler());
-socketServer.addHandler(new SocketHandler());
+httpServer.callHandler(new DefaultHTTPHandler());
+wsServer.addHandler(new DefaultWSHandler());
+socketServer.addHandler(new DefaultSocketHandler());
 
 httpServer.listen(PlatformServer.config.httpPort);
 socketServer.listen(PlatformServer.config.socketPort);

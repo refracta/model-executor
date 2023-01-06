@@ -1,48 +1,45 @@
-import {ISocket} from "../types/Types.mjs";
-import SocketServer from "../SocketServer.mjs";
-import PlatformServer from "../core/PlatformServer.mjs";
-import Model from "../../Model.mjs";
-import Database from "../../Database.mjs";
+import PlatformServer from "../../core/PlatformServer";
+import Model from "../../../Model";
 import * as fs from "fs";
 import * as stream from "stream";
-import XTerm from 'xterm-headless';
-
-const {Terminal} = XTerm;
+import {Terminal} from 'xterm-headless';
 import {SerializeAddon} from "xterm-addon-serialize";
-import model from "../../Model.mjs";
 import {v4 as uuid} from "uuid";
 import streams from 'memory-streams';
+import {SocketHandler} from "../../../types/Interfaces";
+import {DefaultSocket, DefaultSocketServer} from "../../../types/Types";
+
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
-class SocketHandler {
-    public onReady(server: SocketServer, socket: ISocket) {
+export default class DefaultSocketHandler implements SocketHandler<DefaultSocketServer, DefaultSocket> {
+    public onReady(server: DefaultSocketServer, socket: DefaultSocket) {
         socket.data.buffer = '';
         socket.data.count = 0;
         socket.data.lcount = 0;
     }
 
-    private async sendFile(socket: ISocket, localPath: string, filePath: string) {
+    private async sendFile(socket: DefaultSocket, localPath: string, filePath: string) {
         let fileSize = fs.statSync(localPath).size;
         socket.write(JSON.stringify({msg: 'File', filePath, fileSize}));
         socket.data.readStream = fs.createReadStream(localPath);
         await new Promise(resolve => socket.data.fileSendResolver = resolve);
     }
 
-    private async sendTextAsFile(socket: ISocket, text: string, filePath: string) {
+    private async sendTextAsFile(socket: DefaultSocket, text: string, filePath: string) {
         let fileSize = Buffer.byteLength(text, 'utf8');
         socket.write(JSON.stringify({msg: 'File', filePath, fileSize}));
         socket.data.readStream = stream.Readable.from([text]);
         await new Promise(resolve => socket.data.fileSendResolver = resolve);
     }
 
-    private async getFile(socket: ISocket, localPath: string, remotePath: string) {
+    private async getFile(socket: DefaultSocket, localPath: string, remotePath: string) {
         socket.data.writeStream = fs.createWriteStream(localPath);
         socket.write(JSON.stringify({msg: 'RequestFile', filePath: remotePath}));
         await new Promise(resolve => socket.data.fileReceiveResolver = resolve);
     }
 
-    private async getFileAsText(socket: ISocket, remotePath: string) {
+    private async getFileAsText(socket: DefaultSocket, remotePath: string) {
         socket.data.writeStream = new streams.WritableStream();
         socket.write(JSON.stringify({msg: 'RequestFile', filePath: remotePath}));
         await new Promise(resolve => socket.data.fileReceiveResolver = resolve);
@@ -50,7 +47,7 @@ class SocketHandler {
     }
 
 
-    public onData(server: SocketServer, socket: ISocket, data: Buffer) {
+    public onData(server: DefaultSocketServer, socket: DefaultSocket, data: Buffer) {
         if (socket.data.mode !== 'file') {
             let dataString = socket.data.buffer + data.toString();
             let splitString = dataString.split('\0').filter(s => s.length > 0);
@@ -104,7 +101,7 @@ class SocketHandler {
         }
     }
 
-    public onMessage(server: SocketServer, socket: ISocket, message: any) {
+    public onMessage(server: DefaultSocketServer, socket: DefaultSocket, message: any) {
         if (message.msg === 'Launch') {
             socket.data.modelPath = message.modelPath;
             let model = Model.getModel(socket.data.modelPath);
@@ -161,9 +158,8 @@ class SocketHandler {
         }
     }
 
-    public onClose(server: SocketServer, socket: ISocket, hadError: boolean) {
+    public onClose(server: DefaultSocketServer, socket: DefaultSocket, hadError: boolean) {
 
     }
 }
 
-export default SocketHandler;

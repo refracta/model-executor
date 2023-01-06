@@ -1,31 +1,8 @@
-import {LowSync, JSONFileSync, Adapter} from 'lowdb'
-import Model from "./Model.mjs";
+import {LowSync, JSONFileSync, Adapter} from '@commonify/lowdb'
+import Model from "./Model";
+import {Data, HistoryData, ModelData, Models} from "./types/Types";
 
-type ModelData = {
-    status: string,
-    historyIndex?: number
-}
-type Models = {
-    [index: string]: ModelData
-}
-
-type HistoryData = {
-    modelPath: string,
-    inputPath?: string,
-    inputInfo?: any,
-    outputPath?: string,
-    outputInfo?: any,
-    description?: string,
-    terminal?: string
-    time?: Date
-}
-
-type Data = {
-    models: Models,
-    histories: HistoryData[]
-}
-
-class Database {
+export default class Database {
     private static instance: Database;
 
     public static get Instance() {
@@ -65,7 +42,7 @@ class Database {
         return histories[index];
     }
 
-    public setHistoryData(index: number, data:HistoryData) {
+    public setHistoryData(index: number, data: HistoryData) {
         let histories: HistoryData[] = Database.db.data?.histories as HistoryData[];
         histories[index] = data;
         Database.db.write();
@@ -77,7 +54,6 @@ class Database {
         return histories.length - 1;
     }
 }
-
-await Database.init(new JSONFileSync<Data>('db.json'));
-
-export default Database;
+(async () => {
+    await Database.init(new JSONFileSync<Data>('db.json'));
+})();

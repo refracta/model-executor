@@ -1,23 +1,20 @@
 import net, {Server, Socket, SocketAddress} from 'net';
 import {v4 as uuidv4} from 'uuid';
-import {ISocket} from "./types/Types.mjs";
+import {ISocket} from "../types/Types";
+import {SocketHandler} from "../types/Interfaces";
+import SocketSender from "./sender/SocketSender";
 
-interface SocketHandler {
-    onReady?: (server: SocketServer, socket: ISocket) => void,
-    onData?: (server: SocketServer, socket: ISocket, data: Buffer) => void,
-    onClose?: (server: SocketServer, socket: ISocket, hadError: boolean) => void,
-}
-
-class SocketServer {
+export default class SocketServer<SocketData, Sender extends SocketSender> {
     public readonly server: Server;
-    public readonly sockets: ISocket[] = [];
-    public readonly socketsMap: { [id: string]: ISocket } = {};
-    public readonly handlers: SocketHandler[] = [];
+    public readonly sender: Sender;
+    public readonly sockets: (ISocket & { data: SocketData })[] = [];
+    public readonly socketsMap: { [id: string]: ISocket & { data: SocketData } } = {};
+    public readonly handlers: SocketHandler<any, any>[] = [];
 
-    constructor() {
-        this.server = net.createServer((socket: ISocket) => {
+    constructor(sender: Sender) {
+        this.server = net.createServer(((socket: ISocket & { data: SocketData }) => {
             socket.id = uuidv4();
-            socket.data = {};
+            socket.data = {} as SocketData;
             this.socketsMap[socket.id] = socket;
             this.sockets.push(socket);
 
@@ -39,18 +36,21 @@ class SocketServer {
                 this.sockets.splice(this.sockets.indexOf(socket), 1);
                 delete this.socketsMap[socket.id as string];
             });
-        });
+        }) as (socket: Socket) => void);
 
         this.server.on('error', function (err) {
             console.error('SocketServer Error:' + err);
         });
+
+        this.sender = sender;
+        this.sender.init(this);
     }
 
-    public addHandler(handler: SocketHandler) {
+    public addHandler(handler: SocketHandler<any, any>) {
         this.handlers.push(handler);
     }
 
-    public removeHandler(handler: SocketHandler) {
+    public removeHandler(handler: SocketHandler<any, any>) {
         let index = this.handlers.indexOf(handler);
         if (index > -1) {
             this.sockets.splice(index, 1);
@@ -63,5 +63,3 @@ class SocketServer {
         });
     }
 }
-
-export default SocketServer;

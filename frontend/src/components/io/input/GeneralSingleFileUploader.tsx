@@ -124,7 +124,7 @@ function GeneralSingleFileUploader({model}: { model: ModelData }) {
             <br/>
             <span style={{fontWeight: 'bold'}}>Size: </span><span>{inputInfo.size}</span>
             <br/>
-            {inputInfo.mimetype.startsWith('image') ? <img src={inputInfo.webpath} style={{
+            {inputInfo.mimetype.startsWith('image') ? <img src={inputInfo.webPath} style={{
                 objectFit: 'contain',
                 maxHeight: '40vh',
                 maxWidth: '100%',

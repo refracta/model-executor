@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import {Stats} from 'fs';
-import Database from "./Database.mjs";
+import Database from "./Database";
 
 let db = Database.Instance;
 
@@ -10,14 +10,12 @@ type UniqueNameMap = {
 
 type ModelMap = { [index: string]: Model };
 
-class Model {
+export default class Model {
     public static uniqueNameMap: UniqueNameMap;
     public static modelMap: ModelMap;
     public readonly path: string;
     public readonly hierarchy: string[];
     public readonly name: string;
-    public readonly deployScriptPath: string;
-    public readonly undeployScriptPath: string;
     public readonly configPath: string;
 
     static {
@@ -28,8 +26,6 @@ class Model {
         this.path = path;
         this.hierarchy = path.split('/').slice(1);
         this.name = this.hierarchy[this.hierarchy.length - 1];
-        this.deployScriptPath = this.path + '/' + 'deploy.sh';
-        this.undeployScriptPath = this.path + '/' + 'undeploy.sh';
         this.configPath = this.path + '/' + 'config.json';
     }
 
@@ -49,6 +45,7 @@ class Model {
         return models;
     }
 
+    // TODO: 이상한 모델 이름을 필터하거나, 맵핑을 고유하게 가질 수 있도록 분리
     private static getUniqueNameMap(models: Model[] = Model.getModels()): UniqueNameMap {
         let nameMap: UniqueNameMap = {};
         let nameCountMap: { [uniqueName: string]: number } = {};
@@ -100,12 +97,16 @@ class Model {
         db.setHistoryData(this.data.historyIndex as number, data);
     }
 
+    public get uniqueName(){
+        return Model.uniqueNameMap[this.path];
+    }
+
 
     public toSimpleData() {
         return {
             hierarchy: this.hierarchy,
             name: this.name,
-            uniqueName: Model.uniqueNameMap[this.path],
+            uniqueName: this.uniqueName,
             status: this.data.status
         };
     }
@@ -118,5 +119,3 @@ class Model {
         }
     }
 }
-
-export default Model;

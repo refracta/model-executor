@@ -1,0 +1,80 @@
+import Database from "../../../Database";
+import Model from "../../../Model";
+import HTTPServer from "../../HTTPServer";
+import express, {Request, Response} from "express";
+import multer from 'multer';
+import PlatformServer from "../../core/PlatformServer";
+import Docker from "dockerode";
+import {HTTPHandler} from "../../../types/Types";
+import DockerUtils from "../../../utils/DockerUtils";
+
+type File = Express.Multer.File & { webPath?: string };
+const upload = multer({dest: 'resources/'});
+export default class DefaultHTTPHandler implements HTTPHandler {
+    public initRoute(httpServer: HTTPServer) {
+        httpServer.app.use('/resources', express.static('resources'));
+
+        httpServer.app.get('/api/models', (req: Request, res: Response) => {
+            let models = Model.getModels();
+            res.json(models.map(m => m.toSimpleData()));
+        });
+
+        httpServer.app.get('/api/model/:uniqueName', (req: Request, res: Response) => {
+            let uniqueName = req.params.uniqueName;
+            let model = Model.getModel(uniqueName);
+            res.json(model.toFullData());
+        });
+
+        httpServer.app.post('/api/upload', upload.fields([{name: 'files'}, {name: 'modelUniqueName'}]), async (req, res, next) => {
+            let model = Model.getModel(req.body.modelUniqueName);
+            let modelData = model.data;
+            if (!(modelData.status === 'off' || modelData.status === 'error')) {
+                res.json({status: 'fail'});
+                return;
+            } else {
+                res.json({status: 'success'});
+            }
+
+            let files = req.files as { [fieldName: string]: File[] };
+            let file = files['files'][0];
+            file.originalname = Buffer.from(file.originalname, 'latin1').toString('utf8');
+            file.webPath = ['', ...file.path.split(/[/\\]/g)].join('/');
+            let historyIndex = Database.Instance.addHistoryData({
+                modelPath: model.path,
+                inputPath: file?.path,
+                inputInfo: file
+            });
+            model.data = {...model.data, status: 'deploying', historyIndex};
+            PlatformServer.wsServer.sender.sendUpdateModels();
+
+            let config = model.config;
+            let docker = new Docker(config.dockerServer ? config.dockerServer : PlatformServer.config.defaultDockerServer);
+            let {container, containerInfo} = await DockerUtils.getContainerByName(docker, config.container);
+            if (!containerInfo) {
+                model.data = {...model.data, status: 'error'};
+                PlatformServer.wsServer.sender.sendUpdateModels();
+                return;
+            }
+
+            try {
+                await container.restart();
+                // await DockerUtils.exec(container, 'rm -rf /opt/mctr'));
+                await DockerUtils.exec(container, 'mkdir -p /opt/mctr/{o,i}');
+                await container.putArchive('../controller/controller.tar', {path: '/opt/mctr/'});
+                await DockerUtils.exec(container, 'rm -rf /opt/mctr/debug');
+                setTimeout(async () => {
+                    await DockerUtils.exec(container, `chmod 777 /opt/mctr/controller && /opt/mctr/controller ${PlatformServer.config.socketExternalHost} ${PlatformServer.config.socketPort} ${Buffer.from(model.path).toString('base64')} >> /opt/mctr/debug 2>&1`);
+                });
+                model.data = {...model.data, status: 'running'};
+                PlatformServer.wsServer.sender.sendUpdateModels();
+            } catch (e) {
+                console.error(e);
+                model.data = {...model.data, status: 'error'};
+                PlatformServer.wsServer.sender.sendUpdateModels();
+                return;
+            }
+
+            PlatformServer.wsServer.sender.sendUpdateModel(model);
+        });
+    }
+}

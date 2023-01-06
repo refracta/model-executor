@@ -1,13 +1,10 @@
 import express, {Application} from 'express';
 import * as http from "http";
+import {HTTPHandler} from "../types/Types";
 
 type Server = http.Server;
 
-interface HTTPHandler {
-    initRoute: (server: HTTPServer) => void,
-}
-
-class HTTPServer {
+export default class HTTPServer {
     public readonly app: Application;
     public readonly server: Server;
 
@@ -26,5 +23,3 @@ class HTTPServer {
         });
     }
 }
-
-export default HTTPServer;

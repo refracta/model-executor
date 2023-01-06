@@ -1,27 +1,23 @@
 import {v4 as uuidv4} from 'uuid';
 import {AddressInfo, WebSocketServer, WebSocket, ServerOptions, RawData} from 'ws';
 import {SocketAddress} from "net";
+import {IWSocket} from "../types/Types";
+import {WebSocketHandler} from "../types/Interfaces";
+import WSSender from "./sender/WSSender";
 
-type IWSSocket = WebSocket & { id?: string, data?: any, req?: any };
-
-interface WebSocketHandler {
-    onReady?: (server: WSServer, socket: IWSSocket) => void,
-    onMessage?: (server: WSServer, socket: IWSSocket, message: RawData, isBinary: boolean) => void,
-    onClose?: (server: WSServer, socket: IWSSocket, code: number, reason: Buffer) => void,
-}
-
-class WSServer {
+export default class WSServer<SocketData, Sender extends WSSender> {
     public readonly server: WebSocketServer;
-    public readonly sockets: IWSSocket[] = [];
-    public readonly socketsMap: { [id: string]: IWSSocket } = {};
-    public readonly handlers: WebSocketHandler[] = [];
+    public readonly sender: Sender;
+    public readonly sockets: (IWSocket & { data: SocketData })[] = [];
+    public readonly socketsMap: { [id: string]: IWSocket & { data: SocketData } } = {};
+    public readonly handlers: WebSocketHandler<any, any>[] = [];
 
-    constructor(options: ServerOptions) {
+    constructor(options: ServerOptions, sender: Sender) {
         this.server = new WebSocketServer(options);
-        this.server.on('connection', (socket: IWSSocket, req) => {
+        this.server.on('connection', (socket: IWSocket & { data: SocketData }, req) => {
             socket.id = uuidv4();
             socket.req = req;
-            socket.data = {};
+            socket.data = {} as SocketData;
             this.socketsMap[socket.id as string] = socket;
             this.sockets.push(socket);
 
@@ -45,19 +41,18 @@ class WSServer {
                 delete this.socketsMap[socket.id as string];
             });
         });
+        this.sender = sender;
+        this.sender.init(this);
     }
 
-    public addHandler(handler: WebSocketHandler) {
+    public addHandler(handler: WebSocketHandler<any, any>) {
         this.handlers.push(handler);
     }
 
-    public removeHandler(handler: WebSocketHandler) {
+    public removeHandler(handler: WebSocketHandler<any, any>) {
         let index = this.handlers.indexOf(handler);
         if (index > -1) {
             this.sockets.splice(index, 1);
         }
     }
 }
-
-export default WSServer;
-
