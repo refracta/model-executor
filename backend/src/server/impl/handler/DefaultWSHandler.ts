@@ -36,10 +36,10 @@ export default class DefaultWSHandler implements WebSocketHandler<DefaultWSServe
         PlatformServer.socketServer.manager.sendHello();
     }
 
-    public onMessage(server: DefaultWSServer, socket: DefaultWSocket, message: RawData, isBinary: boolean) {
-        let data = JSON.parse(message.toString());
-        console.log('DefaultWSHandler.onMessage', data);
-        handles[data.msg](server, socket, data);
+    public onMessage(server: DefaultWSServer, socket: DefaultWSocket, rawData: RawData, isBinary: boolean) {
+        let message = JSON.parse(rawData.toString());
+        console.log('DefaultWSHandler.onMessage', message);
+        handles[message.msg](server, socket, message);
     }
 
     public onClose(server: DefaultWSServer, socket: DefaultWSocket, code: number, reason: Buffer) {

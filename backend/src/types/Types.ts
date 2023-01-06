@@ -5,7 +5,6 @@ import SocketServer from "../server/SocketServer";
 import HTTPServer from "../server/HTTPServer";
 import DefaultSocketManager from "../server/impl/manager/DefaultSocketManager";
 import DefaultWSManager from "../server/impl/manager/DefaultWSManager";
-import {ReadStream, WriteStream} from "fs";
 import stream from "stream";
 import {Terminal} from "xterm-headless";
 import {SerializeAddon} from "xterm-addon-serialize";

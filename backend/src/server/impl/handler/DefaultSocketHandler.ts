@@ -1,11 +1,8 @@
 import PlatformServer from "../../core/PlatformServer";
 import Model from "../../../Model";
-import * as fs from "fs";
-import * as stream from "stream";
 import {Terminal} from "xterm-headless";
 import {SerializeAddon} from "xterm-addon-serialize";
 import {v4 as uuid} from "uuid";
-import streams from "memory-streams";
 import {SocketHandler} from "../../../types/Interfaces";
 import {DefaultSocket, DefaultSocketServer, SocketMessageType, SocketReceiveMode} from "../../../types/Types";
 
@@ -94,6 +91,7 @@ export default class DefaultSocketHandler implements SocketHandler<DefaultSocket
                     console.error(`split=${JSON.stringify(split)}, dataString=${JSON.stringify(dataString)}`);
                     process.exit(1);
                 }
+                console.log('DefaultSocketHandler.onMessage', message);
                 handles[message.msg](server, socket, message);
             }
             let message;
@@ -103,6 +101,7 @@ export default class DefaultSocketHandler implements SocketHandler<DefaultSocket
             } catch (e) {
                 socket.data.buffer = lastMessageString;
             }
+            console.log('DefaultSocketHandler.onMessage', message);
             handles[message.msg](server, socket, message);
         } else {
             socket.data.receivedBytes += data.length;
