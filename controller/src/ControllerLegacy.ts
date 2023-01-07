@@ -1,7 +1,6 @@
 import net from 'net';
 import * as fs from "fs";
 import * as pty from 'node-pty-prebuilt-multiarch';
-// import * as pty from 'node-pty';
 
 let [host, port, modelPath] = process.argv.slice(2);
 modelPath = Buffer.from(modelPath, 'base64').toString('utf8');
@@ -9,7 +8,6 @@ let socket = net.connect({port: parseInt(port), host});
 
 let received = 0;
 let writeStream: fs.WriteStream;
-let count = 0;
 socket.on('connect', function () {
     let socketData: any = {};
     socket.write(JSON.stringify({msg: 'Launch', modelPath}) + '\0');
