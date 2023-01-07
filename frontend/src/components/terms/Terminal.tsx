@@ -6,13 +6,11 @@ import {AppData} from "../../types/Types";
 
 let terminal: XTerm;
 let lastResize: string;
-
+let global: any = window;
 export default function Terminal({data, fitAddon}: { data: AppData, fitAddon: FitAddon }) {
     useEffect(() => {
-        if ((window as any).terminal) {
-            ((window as any).terminal).dispose();
-        }
-
+        // WARNING: ref hook로 수정 가능한지 알아볼 것
+        global.terminal?.dispose();
         terminal = new XTerm({cursorBlink: false, allowProposedApi: true});
         terminal.loadAddon(fitAddon);
         terminal.open(document.querySelector('.terminal-container') as HTMLElement);
@@ -23,7 +21,7 @@ export default function Terminal({data, fitAddon}: { data: AppData, fitAddon: Fi
                 data.sendJsonMessage({msg: 'TerminalResize', ...event});
             }
         });
-        (window as any).terminal = terminal;
+        global.terminal = terminal;
 
         let viewport = document.querySelector('.xterm-viewport') as HTMLElement;
         viewport.style.overflowY = 'hidden';
@@ -32,7 +30,7 @@ export default function Terminal({data, fitAddon}: { data: AppData, fitAddon: Fi
 
     useEffect(() => {
         // Strict mode 해제
-        let terminalQueue: string[] = (window as any).terminalQueue = [];
+        let terminalQueue: string[] = global.terminalQueue = [];
         let isWorking = false;
         data.getWebSocket()?.addEventListener('message', (event: Event) => {
             let data = (event as MessageEvent).data;
