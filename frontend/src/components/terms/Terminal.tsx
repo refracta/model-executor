@@ -21,6 +21,18 @@ export default function Terminal({data, fitAddon}: { data: AppData, fitAddon: Fi
                 data.sendJsonMessage({msg: 'TerminalResize', ...event});
             }
         });
+
+
+        const resizeObserver = new ResizeObserver(function (entries) {
+            // since we are observing only a single element, so we access the first element in entries array
+            try {
+                fitAddon && fitAddon.fit();
+            } catch (err) {
+                console.log(err);
+            }
+        });
+
+        resizeObserver.observe(document.querySelector(".terminal-container") as HTMLElement);
         global.terminal = terminal;
 
         let viewport = document.querySelector('.xterm-viewport') as HTMLElement;
