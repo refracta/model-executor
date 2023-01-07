@@ -15,24 +15,24 @@ export type ISocket = NetSocket & { id: string };
 type Resolver = (value?: unknown) => void;
 type ReadStreamClose = (callback?: (err?: NodeJS.ErrnoException | null) => void) => void;
 export type DefaultSocketData = {
-    buffer: string,
-    receiveMode: SocketReceiveMode,
-    receivedBytes: number,
-    fileSize: number,
-    writeStream: stream.Writable,
-    readStream: stream.Readable & { close?: ReadStreamClose },
-    fileReceiveResolver: Resolver,
-    fileSendResolver: Resolver,
-    modelPath: string,
-    terminal: Terminal,
-    terminalSerializer: SerializeAddon
+    buffer: string;
+    receiveMode: SocketReceiveMode;
+    receivedBytes: number;
+    fileSize: number;
+    writeStream: stream.Writable;
+    readStream: stream.Readable & { close?: ReadStreamClose };
+    fileReceiveResolver: Resolver;
+    fileSendResolver: Resolver;
+    modelPath: string;
+    terminal: Terminal;
+    terminalSerializer: SerializeAddon;
 };
 
 export type DefaultSocket = ISocket & { data: DefaultSocketData };
 export type IWSocket = WebSocket & { id: string, req: any };
 export type DefaultWSData = {
     modelUniqueName?: string;
-    path: string
+    path: string;
 };
 export type DefaultWSocket = IWSocket & { data: DefaultWSData };
 
@@ -65,25 +65,25 @@ export enum SocketReceiveMode {
 
 
 export type ModelData = {
-    status: string,
-    historyIndex?: number
+    status: string;
+    historyIndex?: number;
 }
 export type Models = {
-    [index: string]: ModelData
+    [index: string]: ModelData;
 }
 
 export type HistoryData = {
-    modelPath: string,
-    inputPath?: string,
-    inputInfo?: any,
-    outputPath?: string,
-    outputInfo?: any,
-    description?: string,
-    terminal?: string
-    time?: Date
+    modelPath: string;
+    inputPath?: string;
+    inputInfo?: any;
+    outputPath?: string;
+    outputInfo?: any;
+    description?: string;
+    terminal?: string;
+    time?: Date;
 }
 
 export type Data = {
-    models: Models,
-    histories: HistoryData[]
+    models: Models;
+    histories: HistoryData[];
 }

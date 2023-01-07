@@ -10,17 +10,14 @@ export type DefaultSocketClient = SocketClient<DefaultSocketData, DefaultSocketM
 type Resolver = (value?: unknown) => void;
 type ReadStreamClose = (callback?: (err?: NodeJS.ErrnoException | null) => void) => void;
 export type DefaultSocketData = {
-    ptyProcess: IPty,
-    filePath: string,
-    buffer: string,
-    receiveMode: SocketReceiveMode,
-    receivedBytes: number,
-    fileSize: number,
-    writeStream: stream.Writable,
-    readStream: stream.Readable & { close?: ReadStreamClose },
-    fileReceiveResolver: Resolver,
-    fileSendResolver: Resolver,
-    modelPath: string,
+    ptyProcess: IPty;
+    filePath: string;
+    buffer: string;
+    receiveMode: SocketReceiveMode;
+    receivedBytes: number;
+    fileSize: number;
+    writeStream: stream.Writable;
+    readStream: stream.Readable & { close?: ReadStreamClose };
 };
 export type DefaultSocket = Socket & { data: DefaultSocketData };
 
