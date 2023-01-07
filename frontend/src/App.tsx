@@ -33,7 +33,6 @@ function App() {
         }
     });
 
-
     let data = {
         model,
         setModel,
