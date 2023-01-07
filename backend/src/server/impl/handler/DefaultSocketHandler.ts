@@ -38,14 +38,25 @@ handles[SocketMessageType.FileReceiveEnd] = (server: DefaultSocketServer, socket
 }
 
 handles[SocketMessageType.Terminal] = (server: DefaultSocketServer, socket: DefaultSocket, message: any) => {
-    let model = Model.getModel(socket.data.modelPath);
-    let history = model.lastHistory;
-    socket.data.terminal.write(message.data, () => {
-        history.terminal = socket.data.terminalSerializer.serialize();
-        model.lastHistory = history;
-    });
-    let sockets = PlatformServer.wsServer.manager.getModelSockets(model);
-    PlatformServer.wsServer.manager.json(message, sockets);
+    socket.data.terminalBuffer += message.data;
+    if (socket.data.waitTerminalFlushTimeout) {
+        return;
+    }
+    socket.data.waitTerminalFlushTimeout = true;
+    setTimeout(() => {
+        let model = Model.getModel(socket.data.modelPath);
+        let history = model.lastHistory;
+        socket.data.terminal.write(socket.data.terminalBuffer, () => {
+            history.terminal = socket.data.terminalSerializer.serialize();
+            model.lastHistory = history;
+        });
+        let sockets = PlatformServer.wsServer.manager.getModelSockets(model);
+        PlatformServer.wsServer.manager.sendTerminal(socket.data.terminalBuffer, sockets);
+
+        console.log('Buffer flushed:', socket.data.terminalBuffer.length);
+        socket.data.terminalBuffer = '';
+        socket.data.waitTerminalFlushTimeout = false;
+    }, 100);
 }
 
 handles[SocketMessageType.ProcessEnd] = (server: DefaultSocketServer, socket: DefaultSocket, message: any) => {
@@ -74,6 +85,8 @@ export default class DefaultSocketHandler implements SocketHandler<DefaultSocket
     onReady(server: DefaultSocketServer, socket: DefaultSocket) {
         socket.data.buffer = '';
         socket.data.receiveMode = SocketReceiveMode.JSON;
+        socket.data.waitTerminalFlushTimeout = false;
+        socket.data.terminalBuffer = '';
     }
 
     onData(server: DefaultSocketServer, socket: DefaultSocket, data: Buffer) {

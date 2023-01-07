@@ -15,6 +15,8 @@ export type ISocket = NetSocket & { id: string };
 type Resolver = (value?: unknown) => void;
 type ReadStreamClose = (callback?: (err?: NodeJS.ErrnoException | null) => void) => void;
 export type DefaultSocketData = {
+    terminalBuffer: string;
+    waitTerminalFlushTimeout: boolean;
     buffer: string;
     receiveMode: SocketReceiveMode;
     receivedBytes: number;
@@ -54,6 +56,7 @@ export enum SocketMessageType {
 export enum WSMessageType {
     Path = 'Path',
     TerminalResize = 'TerminalResize',
+    Terminal = 'Terminal',
     UpdateModel = 'UpdateModel',
     UpdateModels = 'UpdateModels'
 }

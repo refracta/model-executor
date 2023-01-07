@@ -26,4 +26,11 @@ export default class DefaultWSManager extends WSManager {
             models: models.map(m => m.toSimpleData())
         }, sockets);
     }
+
+    sendTerminal(data: string, sockets: DefaultWSocket[] = this.getAllSockets()) {
+        this.json({
+            msg: WSMessageType.Terminal,
+            data
+        }, sockets);
+    }
 }
