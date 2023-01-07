@@ -1,9 +1,7 @@
-import React, {useState, useEffect, ReactNode, ReactElement} from 'react';
-import {Menu, MenuItem, SubMenu} from "react-pro-sidebar";
-import {Mode} from "fs";
+import React, {ReactElement} from 'react';
+import {MenuItem, SubMenu} from "react-pro-sidebar";
 import {Link} from "react-router-dom";
 import {FaStar} from "react-icons/fa";
-import useData from "../../../../hooks/useData";
 import {AppData, ModelData} from "../../../../types/Types";
 // {/*<MenuItem suffix={<span className="badge green">Running</span>}>1 </MenuItem>*/}
 // {/*<MenuItem suffix={<span className="badge yellow">Deploying</span>}>2 </MenuItem>*/}

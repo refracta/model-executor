@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/App.scss';
 import './App.css';
 import Aside from "./components/sidebar/Aside";
-import {AppData, ModelData} from "./types/Types";
+import {ModelData} from "./types/Types";
 import Main from "./components/contents/base/Main";
 
 import useWebSocket from "react-use-websocket";

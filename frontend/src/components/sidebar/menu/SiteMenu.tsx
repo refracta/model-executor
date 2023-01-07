@@ -2,7 +2,7 @@ import React from 'react';
 import {Menu, MenuItem} from 'react-pro-sidebar';
 import {FaHistory, FaStar} from "react-icons/fa";
 import {AiFillSetting} from "react-icons/ai";
-import {BrowserRouter, Navigate, Route, Routes, Link, useMatch} from 'react-router-dom';
+import {Link, useMatch} from 'react-router-dom';
 
 const isMatch = (pattern: string) => useMatch(pattern) ? true : false;
 

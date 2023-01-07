@@ -1,4 +1,4 @@
-import React, {CSSProperties, useEffect, useRef, useState} from 'react';
+import React, {CSSProperties, useEffect, useState} from 'react';
 import {useDropzone} from 'react-dropzone';
 import {ModelData} from "../../../types/Types";
 

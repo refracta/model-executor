@@ -1,4 +1,4 @@
-import React, {ReactNode} from 'react';
+import React from 'react';
 import NavbarMenu from "../../sidebar/menu/impl/NavbarMenu";
 import {AppData} from "../../../types/Types";
 import {Route, Routes} from "react-router-dom";

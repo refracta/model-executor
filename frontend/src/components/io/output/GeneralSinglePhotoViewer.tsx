@@ -7,6 +7,7 @@ const img: CSSProperties = {
     width: 'auto',
     height: '100%'
 };
+
 function GeneralSinglePhotoViewer({model}: { model: ModelData }) {
     let config = model?.config;
     let outputPath = model.lastHistory?.outputPath;

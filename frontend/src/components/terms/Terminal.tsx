@@ -1,9 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {FitAddon} from "xterm-addon-fit";
 import {Terminal as XTerm} from 'xterm';
 import 'xterm/css/xterm.css';
 import {AppData} from "../../types/Types";
-import model from "../contents/Model";
 
 let terminal: XTerm;
 let lastModelPath: string;

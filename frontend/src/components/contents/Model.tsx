@@ -16,7 +16,8 @@ function Model({data}: { data: AppData }) {
     let config = model?.config;
     let fit = fitAddon.fit.bind(fitAddon);
     return (
-        <Split className="split-container" sizes={[75, 25]} direction="vertical" onDrag={fit} onDragEnd={fit} onDragExit={fit}>
+        <Split className="split-container" sizes={[75, 25]} direction="vertical" onDrag={fit} onDragEnd={fit}
+               onDragExit={fit}>
             <div className="main-content-container">
                 <Row xs={1} md={2} className="h-100">
                     <Col className='left-col'>

@@ -1,9 +1,6 @@
-import React, {ReactNode, useEffect, useState} from 'react';
-import {Menu, MenuItem, ProSidebar, SidebarContent, SidebarFooter, SidebarHeader, SubMenu} from "react-pro-sidebar";
-import {FaHistory, FaStar} from "react-icons/fa";
-import {AiFillSetting} from "react-icons/ai";
-import {Link, Route, Routes, useParams} from 'react-router-dom';
-import ContentMenu from "./menu/ContentMenu";
+import React from 'react';
+import {Menu, ProSidebar, SidebarContent, SidebarHeader} from "react-pro-sidebar";
+import {Route, Routes} from 'react-router-dom';
 import {AppData} from "../../types/Types";
 import SiteMenu from "./menu/SiteMenu";
 import ModelMenu from "./menu/impl/ModelMenu";
@@ -11,7 +8,7 @@ import HistoryMenu from "./menu/impl/HistoryMenu";
 import SettingMenu from "./menu/impl/SettingMenu";
 
 interface Props {
-    toggled:boolean,
+    toggled: boolean,
     setToggled: (value: boolean) => void,
     data: AppData,
     modelUniqueName?: string

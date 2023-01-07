@@ -208,6 +208,7 @@ body {
     color: #ffffff;
     background: #05901e;
   }
+
   &.blue {
     color: #0004fc;
     background: #ffffff;
@@ -269,6 +270,7 @@ body {
   //overflow-x: hidden;
   overflow: hidden;
   width: calc(100%);
+
   .row {
     margin: 0px;
   }
@@ -285,8 +287,9 @@ body {
     padding-left: 10px;
   }
 }
+
 .col {
-  padding:6px;
+  padding: 6px;
 }
 
 /*#main-navbar {
