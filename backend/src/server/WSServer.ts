@@ -17,7 +17,7 @@ export default class WSServer<SocketData, Manager extends WSManager> {
             socket.id = uuidv4();
             socket.req = req;
             socket.data = {} as SocketData;
-            this.socketsMap[socket.id as string] = socket;
+            this.socketsMap[socket.id] = socket;
             this.sockets.push(socket);
 
             let address = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
@@ -37,7 +37,7 @@ export default class WSServer<SocketData, Manager extends WSManager> {
             socket.on('close', (code: number, reason: Buffer) => {
                 this.handlers.forEach(h => h.onClose?.(this, socket, code, reason));
                 this.sockets.splice(this.sockets.indexOf(socket), 1);
-                delete this.socketsMap[socket.id as string];
+                delete this.socketsMap[socket.id];
             });
         });
         this.manager = manager;
@@ -51,7 +51,7 @@ export default class WSServer<SocketData, Manager extends WSManager> {
     removeHandler(handler: WebSocketHandler<any, any>) {
         let index = this.handlers.indexOf(handler);
         if (index > -1) {
-            this.sockets.splice(index, 1);
+            this.handlers.splice(index, 1);
         }
     }
 }

@@ -34,7 +34,7 @@ export default class SocketServer<SocketData, Manager extends SocketManager> {
             socket.on('close', (hadError: boolean) => {
                 this.handlers.forEach(h => h.onClose?.(this, socket, hadError));
                 this.sockets.splice(this.sockets.indexOf(socket), 1);
-                delete this.socketsMap[socket.id as string];
+                delete this.socketsMap[socket.id];
             });
         }) as (socket: Socket) => void);
 
@@ -53,7 +53,7 @@ export default class SocketServer<SocketData, Manager extends SocketManager> {
     removeHandler(handler: SocketHandler<any, any>) {
         let index = this.handlers.indexOf(handler);
         if (index > -1) {
-            this.sockets.splice(index, 1);
+            this.handlers.splice(index, 1);
         }
     }
 
