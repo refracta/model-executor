@@ -9,7 +9,6 @@ import IOModule from "../io/IOModule";
 import Terminal from "../terms/Terminal";
 import {FitAddon} from "xterm-addon-fit";
 
-// JSP(param1, param2) <= parametr
 export default function Model({data}: { data: AppData }) {
     let fitAddon = new FitAddon();
     let model = data.model as ModelData;

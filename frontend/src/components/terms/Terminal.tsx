@@ -5,12 +5,9 @@ import 'xterm/css/xterm.css';
 import {AppData} from "../../types/Types";
 
 let terminal: XTerm;
-let lastModelPath: string;
-let lastMessage: any;
 let lastResize: string;
 
 export default function Terminal({data, fitAddon}: { data: AppData, fitAddon: FitAddon }) {
-
     useEffect(() => {
         if ((window as any).terminal) {
             ((window as any).terminal).dispose();
@@ -32,26 +29,11 @@ export default function Terminal({data, fitAddon}: { data: AppData, fitAddon: Fi
         viewport.style.overflowY = 'hidden';
         fitAddon.fit();
     }, []);
-    /*    if((window as any).testQueue?.length === void 0){
-            (window as any).testQueue = [];
-        }*/
-    /*      useEffect(() => {
-              if (lastMessage === data.lastJsonMessage) {
-                  return;
-              } else {
-                  lastMessage = data.lastJsonMessage;
-              }
-              if (lastMessage && lastMessage.msg === 'Terminal') {
-                  terminal.write(lastMessage.data);
-                  terminal.scrollToBottom();
-              }
-          }, [data.lastJsonMessage]);*/
+
     useEffect(() => {
         // Strict mode 해제
-        (window as any).terminalQueue = [];
-        let terminalQueue: string[] = (window as any).terminalQueue;
+        let terminalQueue: string[] = (window as any).terminalQueue = [];
         let isWorking = false;
-        let count = 0;
         data.getWebSocket()?.addEventListener('message', (event: Event) => {
             let data = (event as MessageEvent).data;
             let message = JSON.parse(data);
