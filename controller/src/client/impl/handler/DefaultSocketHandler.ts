@@ -68,7 +68,7 @@ export default class DefaultSocketHandler implements SocketHandler<DefaultSocket
         if (socket.data.receiveMode === SocketReceiveMode.JSON) {
             let dataString = socket.data.buffer + data.toString();
             let splitString = dataString.split('\0').filter(s => s.length > 0);
-            let lastMessageString = (splitString.length > 1 ? splitString.pop() : splitString[0]) as string;
+            let lastMessageString = splitString.pop() as string;
             for (let split of splitString) {
                 let message;
                 try {
@@ -89,8 +89,10 @@ export default class DefaultSocketHandler implements SocketHandler<DefaultSocket
             } catch (e) {
                 socket.data.buffer = lastMessageString;
             }
-            console.log('DefaultSocketHandler.onMessage', message);
-            handles[message.msg](client, socket, message);
+            if (message) {
+                console.log('DefaultSocketHandler.onMessage', message);
+                handles[message.msg](client, socket, message);
+            }
         } else {
             socket.data.receivedBytes += data.length;
             if (socket.data.receivedBytes == socket.data.fileSize) {
