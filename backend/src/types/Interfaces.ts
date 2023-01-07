@@ -1,4 +1,9 @@
 import {RawData} from "ws";
+import HTTPServer from "../server/HTTPServer";
+
+export interface HTTPHandler {
+    initRoute: (server: HTTPServer) => void,
+}
 
 export interface SocketHandler<Server, Socket> {
     onReady?: (server: Server, socket: Socket) => void,

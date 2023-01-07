@@ -1,4 +1,4 @@
-import WSManager from "../../sender/WSManager";
+import WSManager from "../../manager/WSManager";
 import {DefaultWSocket, WSMessageType} from "../../../types/Types";
 import Model from "../../../Model";
 

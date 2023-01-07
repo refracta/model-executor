@@ -1,4 +1,4 @@
-import SocketManager from "../../sender/SocketManager";
+import SocketManager from "../../manager/SocketManager";
 import {DefaultSocket, SocketMessageType} from "../../../types/Types";
 import Model from "../../../Model";
 import fs from "fs";
@@ -16,7 +16,7 @@ export default class DefaultSocketManager extends SocketManager {
     }
 
     json(data: any, sockets: DefaultSocket[] = this.getAllSockets()) {
-        sockets.forEach(s => s.write(JSON.stringify(data)));
+        sockets.forEach(s => s.write(JSON.stringify(data)) + '\0');
     }
 
     sendHello(sockets: DefaultSocket[] = this.getAllSockets()) {

@@ -2,7 +2,7 @@ import net, {Server, Socket, SocketAddress} from "net";
 import {v4 as uuidv4} from "uuid";
 import {ISocket} from "../types/Types";
 import {SocketHandler} from "../types/Interfaces";
-import SocketManager from "./sender/SocketManager";
+import SocketManager from "./manager/SocketManager";
 
 export default class SocketServer<SocketData, Manager extends SocketManager> {
     readonly server: Server;

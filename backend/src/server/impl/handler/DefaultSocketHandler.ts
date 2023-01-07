@@ -67,7 +67,7 @@ handles[SocketMessageType.File] = (server: DefaultSocketServer, socket: DefaultS
     socket.data.fileSize = message.fileSize;
     socket.data.receivedBytes = 0;
     socket.pipe(socket.data.writeStream);
-    socket.write(JSON.stringify({msg: 'WaitReceive'}));
+    server.manager.json({msg: SocketMessageType.WaitReceive}, [socket]);
 }
 
 export default class DefaultSocketHandler implements SocketHandler<DefaultSocketServer, DefaultSocket> {
@@ -112,7 +112,7 @@ export default class DefaultSocketHandler implements SocketHandler<DefaultSocket
                 });
                 socket.resume();
                 socket.data.receiveMode = SocketReceiveMode.JSON;
-                socket.write(JSON.stringify({msg: 'FileReceiveEnd'}));
+                server.manager.json({msg: SocketMessageType.FileReceiveEnd}, [socket]);
                 socket.data.fileReceiveResolver();
             }
         }

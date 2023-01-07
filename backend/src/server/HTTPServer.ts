@@ -1,6 +1,6 @@
 import express, {Application} from "express";
 import * as http from "http";
-import {HTTPHandler} from "../types/Types";
+import {HTTPHandler} from "../types/Interfaces";
 
 type Server = http.Server;
 

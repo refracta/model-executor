@@ -2,7 +2,7 @@ import {v4 as uuidv4} from "uuid";
 import {RawData, ServerOptions, WebSocketServer} from "ws";
 import {IWSocket} from "../types/Types";
 import {WebSocketHandler} from "../types/Interfaces";
-import WSManager from "./sender/WSManager";
+import WSManager from "./manager/WSManager";
 
 export default class WSServer<SocketData, Manager extends WSManager> {
     readonly server: WebSocketServer;

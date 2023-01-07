@@ -5,8 +5,8 @@ import express, {Request, Response} from "express";
 import multer from "multer";
 import PlatformServer from "../../core/PlatformServer";
 import Docker from "dockerode";
-import {HTTPHandler} from "../../../types/Types";
 import DockerUtils from "../../../utils/DockerUtils";
+import {HTTPHandler} from "../../../types/Interfaces";
 
 type File = Express.Multer.File & { webPath?: string };
 const upload = multer({dest: 'resources/'});

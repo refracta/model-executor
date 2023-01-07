@@ -9,9 +9,7 @@ import stream from "stream";
 import {Terminal} from "xterm-headless";
 import {SerializeAddon} from "xterm-addon-serialize";
 
-export interface HTTPHandler {
-    initRoute: (server: HTTPServer) => void,
-}
+
 
 export type ISocket = NetSocket & { id: string };
 type Resolver = (value?: unknown) => void;
@@ -49,7 +47,8 @@ export enum SocketMessageType {
     Terminal = 'Terminal',
     ProcessEnd = 'ProcessEnd',
     File = 'File',
-    RequestFile = 'RequestFile'
+    RequestFile = 'RequestFile',
+    WaitReceive = 'WaitReceive'
 }
 
 export enum WSMessageType {
