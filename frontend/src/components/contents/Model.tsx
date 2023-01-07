@@ -10,7 +10,7 @@ import Terminal from "../terms/Terminal";
 import {FitAddon} from "xterm-addon-fit";
 
 // JSP(param1, param2) <= parametr
-function Model({data}: { data: AppData }) {
+export default function Model({data}: { data: AppData }) {
     let fitAddon = new FitAddon();
     let model = data.model as ModelData;
     let config = model?.config;
@@ -53,5 +53,3 @@ function Model({data}: { data: AppData }) {
         </Split>
     );
 }
-
-export default Model;

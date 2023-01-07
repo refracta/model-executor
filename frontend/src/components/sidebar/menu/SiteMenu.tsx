@@ -6,7 +6,7 @@ import {Link, useMatch} from 'react-router-dom';
 
 const isMatch = (pattern: string) => useMatch(pattern) ? true : false;
 
-function SiteMenu() {
+export default function SiteMenu() {
 
     return (<Menu className={'site-menu'} iconShape="circle">
         <MenuItem active={isMatch("/model/*")} icon={<FaStar/>}>Model<Link
@@ -17,5 +17,3 @@ function SiteMenu() {
             to="/setting"/></MenuItem>
     </Menu>)
 }
-
-export default SiteMenu;

@@ -8,7 +8,7 @@ const img: CSSProperties = {
     height: '100%'
 };
 
-function GeneralSinglePhotoViewer({model}: { model: ModelData }) {
+export default function GeneralSinglePhotoViewer({model}: { model: ModelData }) {
     let config = model?.config;
     let outputPath = model.lastHistory?.outputPath;
     return (<><Card.Text>
@@ -16,5 +16,3 @@ function GeneralSinglePhotoViewer({model}: { model: ModelData }) {
         {outputPath ? <img style={img} src={outputPath}/> : <></>}
     </Card.Text></>);
 }
-
-export default GeneralSinglePhotoViewer;

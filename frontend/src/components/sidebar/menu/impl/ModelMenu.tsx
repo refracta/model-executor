@@ -69,9 +69,7 @@ interface Props {
     // for fast interactive reaction
 }
 
-function ModelMenu({data, modelUniqueName}: Props) {
+export default function ModelMenu({data, modelUniqueName}: Props) {
     let renderHierarchy = toRenderHierarchy(data.models);
     return menuify(renderHierarchy, modelUniqueName);
 }
-
-export default ModelMenu;

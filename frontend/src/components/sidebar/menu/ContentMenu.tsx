@@ -2,7 +2,7 @@ import React from 'react';
 import {useParams} from "react-router-dom";
 
 
-function ContentMenu() {
+export default function ContentMenu() {
     let {uniqueName} = useParams();
     /*    switch (siteMenu) {
             case SiteMenu.Model:
@@ -28,5 +28,3 @@ function ContentMenu() {
                 break;
         }*/
 }
-
-export default ContentMenu;

@@ -5,7 +5,7 @@ interface Props {
     setToggled: (value: boolean) => void
 }
 
-function NavbarMenu({setToggled}: Props) {
+export default function NavbarMenu({setToggled}: Props) {
     return (<Navbar id="main-navbar" expand="md">
         <Container>
             <Navbar.Brand href="#">Model executor</Navbar.Brand>
@@ -13,5 +13,3 @@ function NavbarMenu({setToggled}: Props) {
         </Container>
     </Navbar>);
 }
-
-export default NavbarMenu;

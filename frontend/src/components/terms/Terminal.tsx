@@ -9,7 +9,7 @@ let lastModelPath: string;
 let lastMessage: any;
 let lastResize: string;
 
-function Terminal({data, fitAddon}: { data: AppData, fitAddon: FitAddon }) {
+export default function Terminal({data, fitAddon}: { data: AppData, fitAddon: FitAddon }) {
 
     useEffect(() => {
         if ((window as any).terminal) {
@@ -90,5 +90,3 @@ function Terminal({data, fitAddon}: { data: AppData, fitAddon: FitAddon }) {
 
     return <></>;
 }
-
-export default Terminal;

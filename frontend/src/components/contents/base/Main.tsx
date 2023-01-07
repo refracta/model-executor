@@ -10,7 +10,7 @@ interface Props {
     setToggled: (value: boolean) => void
 }
 
-function Main({data, setToggled}: Props) {
+export default function Main({data, setToggled}: Props) {
     return (<main>
         <NavbarMenu setToggled={setToggled}></NavbarMenu>
         <Routes>
@@ -18,5 +18,3 @@ function Main({data, setToggled}: Props) {
         </Routes>
     </main>);
 }
-
-export default Main;

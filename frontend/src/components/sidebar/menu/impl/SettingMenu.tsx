@@ -1,7 +1,5 @@
-function SettingMenu() {
+export default function SettingMenu() {
     return (
         <div></div>
     );
 }
-
-export default SettingMenu;

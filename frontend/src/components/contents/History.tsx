@@ -1,7 +1,5 @@
 import React from 'react';
 
-function History() {
+export default function History() {
     return <div></div>;
 }
-
-export default History;

@@ -1,7 +1,5 @@
 import React from 'react';
 
-function Setting() {
+export default function Setting() {
     return <div></div>;
 }
-
-export default Setting;

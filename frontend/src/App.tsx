@@ -9,7 +9,7 @@ import Main from "./components/contents/base/Main";
 
 import useWebSocket from "react-use-websocket";
 
-function App() {
+export default function App() {
     const [models, setModels] = useState<ModelData[]>([]);
     const [model, setModel] = useState<ModelData | null>(null);
     const {
@@ -82,5 +82,3 @@ function App() {
         </Routes>
     );
 }
-
-export default App;

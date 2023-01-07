@@ -14,7 +14,7 @@ interface Props {
     modelUniqueName?: string
 }
 
-function Aside({toggled, setToggled, data, modelUniqueName}: Props) {
+export default function Aside({toggled, setToggled, data, modelUniqueName}: Props) {
     return (
         <ProSidebar
             breakPoint="md"
@@ -52,5 +52,3 @@ function Aside({toggled, setToggled, data, modelUniqueName}: Props) {
         </ProSidebar>
     );
 }
-
-export default Aside;

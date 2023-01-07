@@ -3,7 +3,7 @@ import {JsonValue, SendJsonMessage, SendMessage, WebSocketLike} from 'react-use-
 import {Dispatch, SetStateAction} from "react";
 import {ReadyState} from "react-use-websocket/src/lib/constants";
 
-type ConfigData = {
+export type ConfigData = {
     name: string;
     explain: string;
     container: string;
@@ -11,7 +11,7 @@ type ConfigData = {
     output: { module: string, options: any };
 }
 
-type HistoryData = {
+export type HistoryData = {
     modelPath: string;
     inputPath?: string;
     inputInfo?: any;
@@ -22,7 +22,7 @@ type HistoryData = {
     time?: Date;
 }
 
-type ModelData = {
+export type ModelData = {
     path: string;
     hierarchy: string[];
     name: string;
@@ -32,7 +32,7 @@ type ModelData = {
     status: string;
 }
 
-type AppData = {
+export type AppData = {
     model: ModelData | null;
     setModel: Dispatch<SetStateAction<ModelData | null>>;
     models: ModelData[];
@@ -44,5 +44,3 @@ type AppData = {
     readyState: ReadyState;
     getWebSocket: () => (WebSocketLike | null)
 }
-
-export type {ModelData, ConfigData, HistoryData, AppData};

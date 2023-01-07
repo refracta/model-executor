@@ -1,7 +1,5 @@
-function HistoryMenu() {
+export default function HistoryMenu() {
     return (
         <div></div>
     );
 }
-
-export default HistoryMenu;

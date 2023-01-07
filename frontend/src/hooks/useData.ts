@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 
-function useData(url: string): any {
+export default function useData(url: string): any {
     const [data, setData] = useState(null);
     useEffect(() => {
         let ignore = false;
@@ -17,5 +17,3 @@ function useData(url: string): any {
     }, [url]);
     return data;
 }
-
-export default useData;

@@ -35,7 +35,7 @@ const img: CSSProperties = {
 
 type IFile = File & { preview?: string };
 
-function GeneralSingleFileUploader({model}: { model: ModelData }) {
+export default function GeneralSingleFileUploader({model}: { model: ModelData }) {
     const [files, setFiles] = useState<IFile[]>([]);
     const [hideDropzone, setHideDropzone] = useState<boolean>(!(model.status === 'off' || model.status === 'error'));
     const [uploadExplain, setUploadExplain] = useState<string>('');
@@ -134,5 +134,3 @@ function GeneralSingleFileUploader({model}: { model: ModelData }) {
         </>
     }
 }
-
-export default GeneralSingleFileUploader;
