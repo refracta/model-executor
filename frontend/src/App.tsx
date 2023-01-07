@@ -49,7 +49,7 @@ function App() {
     let modelUniqueName = useMatch('/model/:uniqueName')?.params?.uniqueName;
     let path = useMatch('/*')?.params['*'];
     useEffect(() => {
-        sendJsonMessage({msg: 'path', path});
+        sendJsonMessage({msg: 'Path', path});
     }, [path]);
 
     useEffect(() => {
