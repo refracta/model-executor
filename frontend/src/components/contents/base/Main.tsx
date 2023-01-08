@@ -15,6 +15,7 @@ export default function Main({data, setToggled}: Props) {
         <NavbarMenu setToggled={setToggled}></NavbarMenu>
         <Routes>
             <Route path='/model/*' element={data.model ? <Model data={data}/> : <></>}/>
+            <Route path='/history/*' element={data.model ? <Model data={data}/> : <></>}/>
         </Routes>
     </main>);
 }
