@@ -61,7 +61,7 @@ export default function Model({data}: { data: AppData }) {
                                 <Card.Title className='mb-0'>{config!.name}</Card.Title>
                             </Card.Header>
                             <Card.Body>
-                                <div className='p-3'>
+                                <div className='p-md-3'>
                                     <Card.Text>
                                         <span style={{whiteSpace: "pre-wrap"}}>{config!.explain}</span>
                                     </Card.Text>
@@ -81,7 +81,7 @@ export default function Model({data}: { data: AppData }) {
                                     </Nav>
                                 </Card.Header>
                                 <Card.Body>
-                                    <div className='p-3'>
+                                    <div className='p-md-3'>
                                         <Tab.Content>
                                             <Tab.Pane eventKey="parameters-default">
                                                 {form?.schema && Object.keys(form?.schema).length ? <JsonForms
@@ -110,8 +110,8 @@ export default function Model({data}: { data: AppData }) {
                                     data.setModel(loadedModel);
                                 }}>Reset</Button> : <></>}
                             </Card.Header>
-                            <Card.Body className='input-upload-card-body'>
-                                <div className='p-3'>
+                            <Card.Body>
+                                <div className='p-md-3'>
                                     <IOModule moduleName={config!.input.module} model={model}
                                               parameters={parameters}/>
                                 </div>
@@ -125,7 +125,7 @@ export default function Model({data}: { data: AppData }) {
                                     <span className="badge green">Last executed</span> : ''}</Card.Title>
                             </Card.Header>
                             <Card.Body>
-                                <div className='p-3'>
+                                <div className='p-md-3'>
                                     <IOModule moduleName={config!.output.module} model={model}/>
                                 </div>
                             </Card.Body>
@@ -136,7 +136,7 @@ export default function Model({data}: { data: AppData }) {
                                     <span className="badge green">Last executed</span> : ''}</Card.Title>
                             </Card.Header>
                             <Card.Body>
-                                <div className='p-3'>
+                                <div className='p-md-3'>
                                     <Card.Text>
                                         <span style={{whiteSpace: "pre-wrap"}}>{model.lastHistory?.description}</span>
                                     </Card.Text>

@@ -336,16 +336,6 @@ body {
   }
 }
 
-.input-upload-card-body {
-  container-type: size;
-  container-name: input-upload-card-body;
-}
-
-@container input-upload-card-body (min-width: 400px) {
-  /* 쿼리 컨테이너 이름 사용 */
-  background-color: red;
-}
-
 @media (min-width: 768px) {
   .main-content-container {
     .col {
