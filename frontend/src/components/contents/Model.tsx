@@ -39,8 +39,8 @@ export default function Model({data}: { data: AppData }) {
         if (cardHeight === 0) {
             splitRef.current.split.setSizes(previousSize);
         } else {
-            console.log(sizes, cardHeight, previousSize);
-            console.log(splitRef);
+            // console.log(sizes, cardHeight, previousSize);
+            // console.log(splitRef);
             previousSize = sizes;
             previousCardHeight = cardHeight;
         }
