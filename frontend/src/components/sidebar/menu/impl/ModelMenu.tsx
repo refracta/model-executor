@@ -3,9 +3,6 @@ import {MenuItem, SubMenu} from "react-pro-sidebar";
 import {Link} from "react-router-dom";
 import {FaStar} from "react-icons/fa";
 import {AppData, ModelData} from "../../../../types/Types";
-// {/*<MenuItem suffix={<span className="badge green">Running</span>}>1 </MenuItem>*/}
-// {/*<MenuItem suffix={<span className="badge yellow">Deploying</span>}>2 </MenuItem>*/}
-// {/*<MenuItem suffix={<span className="badge red">Undeploying</span>}>2 </MenuItem>*/}
 
 function toRenderHierarchy(models: ModelData[]): { [key: string | symbol]: any } {
     let renderHierarchy: { [key: string | symbol]: any } = {};

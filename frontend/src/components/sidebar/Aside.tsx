@@ -16,26 +16,9 @@ interface Props {
 
 export default function Aside({toggled, setToggled, data, modelUniqueName}: Props) {
     return (
-        <ProSidebar
-            breakPoint="md"
-            toggled={toggled}
-            onToggle={setToggled}
-        >
+        <ProSidebar breakPoint="md" toggled={toggled} onToggle={setToggled}>
             <SidebarHeader>
-                <div
-                    style={{
-                        padding: '24px',
-                        textTransform: 'uppercase',
-                        fontWeight: 'bold',
-                        fontSize: 14,
-                        letterSpacing: '1px',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                    }}
-                >
-                    Model executor
-                </div>
+                <div className='sidebar-header-text'>Model executor</div>
             </SidebarHeader>
             <SidebarContent>
                 <SiteMenu/>

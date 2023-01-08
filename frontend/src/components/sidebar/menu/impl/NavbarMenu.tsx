@@ -6,15 +6,12 @@ interface Props {
 }
 
 export default function NavbarMenu({setToggled}: Props) {
-    return (<>
-        <Navbar id="main-navbar" expand="md" variant="dark">
-            <Container>
-                <Navbar.Brand href="#home">
-                    Model executor
-                </Navbar.Brand>
-                <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={() => setToggled(true)}/>
-
-            </Container>
-        </Navbar>
-    </>);
+    return <Navbar id="main-navbar" expand="md" variant="dark">
+        <Container>
+            <Navbar.Brand href="#home">
+                Model executor
+            </Navbar.Brand>
+            <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={() => setToggled(true)}/>
+        </Container>
+    </Navbar>;
 }

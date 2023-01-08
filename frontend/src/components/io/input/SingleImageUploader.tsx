@@ -50,6 +50,7 @@ export default function SingleImageUploader({model, parameters}: { model: ModelD
         accept: {
             'image/*': []
         },
+
         // TODO: 이미지 말고 다양한 타입 지원
         onDrop: async (acceptedFiles: IFile[]) => {
             setUploadExplain('Uploading...');
@@ -98,15 +99,13 @@ export default function SingleImageUploader({model, parameters}: { model: ModelD
     ));
 
     useEffect(() => {
-        // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
         return () => files.forEach((file: IFile) => URL.revokeObjectURL(file.preview as string));
     }, []);
 
     if (model.status === 'off' || model.status === 'error') {
         return (
             <section className="container">
-                <div {...getRootProps({className: 'dropzone'})} style={hideDropzone ? {display: 'none'} : {}}
-                >
+                <div {...getRootProps({className: 'dropzone'})} style={hideDropzone ? {display: 'none'} : {}}>
                     <input {...getInputProps()} />
                     <p className='mb-0'>Drag & drop or click to upload</p>
                     <p className='mb-0'>Support format: {config!.output.options.format.join(', ')}</p>
