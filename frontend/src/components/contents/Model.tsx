@@ -110,7 +110,7 @@ export default function Model({data}: { data: AppData }) {
                                     data.setModel(loadedModel);
                                 }}>Reset</Button> : <></>}
                             </Card.Header>
-                            <Card.Body>
+                            <Card.Body className='input-upload-card-body'>
                                 <div className='p-md-3'>
                                     <IOModule moduleName={config!.input.module} model={model}
                                               parameters={parameters}/>
