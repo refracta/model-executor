@@ -6,9 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "start": "node build/index.cjs",
     "pkg": "pkg . --debug",
-    "pack": "npm run build && npm run pkg && ts-node src/scripts/CompressScript.ts"
+    "pack": "npm run build && npm run pkg && ts-node src/scripts/CompressScript.ts",
+    "dev": "nodemon"
   },
   "author": "refracta",
   "license": "ISC",

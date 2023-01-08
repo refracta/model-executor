@@ -1,0 +1,12 @@
+{
+  "watch": [
+    "src",
+    ".env"
+  ],
+  "ext": "js,ts,json",
+  "ignore": [
+    "src/**/*.spec.ts",
+    "db.json"
+  ],
+  "exec": "npm run pack"
+}
