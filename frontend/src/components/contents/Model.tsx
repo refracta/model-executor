@@ -13,6 +13,13 @@ import {materialCells, materialRenderers} from '@jsonforms/material-renderers';
 import {Button, Nav, Tab} from "react-bootstrap";
 import ReactJson from "react-json-view";
 
+function download(dataurl: string, filename: string) {
+    const link = document.createElement("a");
+    link.href = dataurl;
+    link.download = filename;
+    link.click();
+}
+
 export default function Model({data}: { data: AppData }) {
     const [parameters, setParameters] = useState({});
     const [resetVisible, setResetVisible] = useState(false);
@@ -121,8 +128,14 @@ export default function Model({data}: { data: AppData }) {
                     <Col className='right-col ps-md-1 pe-md-2 pt-2 pb-2'>
                         <Card className='card-output mb-2 h-75'>
                             <Card.Header>
-                                <Card.Title className='mb-0'>Output {model?.lastHistory ?
+                                <Card.Title className='mb-0 float-start'>Output {model?.lastHistory ?
                                     <span className="badge green">Last executed</span> : ''}</Card.Title>
+                                {model?.lastHistory ? <Button className='float-end btn-sm info' onClick={async (e) => {
+                                    let outputName = model.lastHistory?.outputInfo.fileName;
+                                    let name = outputName ? outputName : 'output_' + model.lastHistory?.inputInfo.originalname;
+                                    // Temporal
+                                    download(model.lastHistory?.outputPath as string, name);
+                                }}>Download</Button> : <></>}
                             </Card.Header>
                             <Card.Body>
                                 <div className='p-md-3'>

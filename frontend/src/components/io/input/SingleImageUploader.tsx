@@ -79,7 +79,6 @@ export default function SingleImageUploader({model, parameters}: { model: ModelD
                 setHideDropzone(false);
                 setUploadExplain('Upload error...');
             }
-
         }
     });
 
