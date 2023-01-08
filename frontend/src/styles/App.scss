@@ -269,7 +269,7 @@ body {
   //background-color: #888888;
   //overflow-x: hidden;
   overflow: hidden;
-  width: calc(100%);
+  //width: calc(100%);
 
   .row {
     margin: 0px;
@@ -282,15 +282,21 @@ body {
 }
 
 #main-navbar {
+  background-color: #0c1e35;
+
   .navbar-brand {
     text-transform: uppercase;
     padding-left: 10px;
   }
+
+  .container {
+    flex-direction: row !important;
+  }
 }
 
-.col {
-  padding: 6px;
-}
+//.col {
+//  padding: 6px;
+//}
 
 /*#main-navbar {
   background-color: #0c1e35;
@@ -304,36 +310,77 @@ body {
   }
 }*/
 
+.card-output-description {
+  height: calc(25% + 0.5rem);
+}
+
+
 @media (max-width: 768px) {
   .terminal-container {
     display: none;
   }
+  main {
+    overflow: auto !important;
+  }
   .main-content-container {
-    height: calc(100vh - 40px - 2 * 8px) !important;
+    //height: calc(100vh - 40px - 2 * 8px) !important;
+    overflow: auto;
+    height: 100% !important;
   }
   .gutter {
     display: none;
   }
+
+  .col, .row {
+    height: fit-content !important;
+  }
+}
+
+.input-upload-card-body {
+  container-type: size;
+  container-name: input-upload-card-body;
+}
+
+@container input-upload-card-body (min-width: 400px) {
+  /* 쿼리 컨테이너 이름 사용 */
+  background-color: red;
 }
 
 @media (min-width: 768px) {
+  .main-content-container {
+    .col {
+      height: 100%;
+    }
+  }
+  .card {
+  }
+  .card-header {
+    //padding:0 !important;
+    .asdfasdf {
+      background-color: red;
+    }
+  }
+  .card-body {
+    overflow-y: auto;
+    padding: 0 !important;
+  }
   #main-navbar {
     display: none;
   }
   .right-col {
-    padding-left: 0px;
+    //padding-left: 0px;
   }
   .card-explain {
-    height: calc(33.3% - 3px);
-    margin-bottom: 6px;
-    overflow-y: auto;
+    //height: calc(33.3% - 3px);
+    //margin-bottom: 6px;
+    //overflow-y: auto;
   }
   .card-upload {
-    height: calc(66.6% - 3px);
+    //height: calc(66.6% - 3px);
   }
-  .card-result {
-    padding-left: 0px;
-    height: 100%;
+  .card-output {
+    //padding-left: 0px;
+    //height: 100%;
   }
 }
 

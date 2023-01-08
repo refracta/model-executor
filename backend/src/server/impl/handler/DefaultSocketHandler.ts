@@ -4,7 +4,15 @@ import {Terminal} from "xterm-headless";
 import {SerializeAddon} from "xterm-addon-serialize";
 import {v4 as uuid} from "uuid";
 import {SocketHandler} from "../../../types/Interfaces";
-import {DefaultSocket, DefaultSocketServer, SocketMessageType, SocketReceiveMode} from "../../../types/Types";
+import {
+    ContainerStatus,
+    DefaultSocket,
+    DefaultSocketServer,
+    SocketMessageType,
+    SocketReceiveMode
+} from "../../../types/Types";
+import Docker from "dockerode";
+import DockerUtils from "../../../utils/DockerUtils";
 
 type Handle = (server: DefaultSocketServer, socket: DefaultSocket, message: any) => void;
 let handles: { [messageType: string]: Handle } = {};
@@ -16,8 +24,8 @@ handles[SocketMessageType.Launch] = (server: DefaultSocketServer, socket: Defaul
     (async () => {
         await server.manager.sendFile(socket, history.inputPath as string, '/opt/mctr/i/raw');
         await server.manager.sendTextAsFile(socket, JSON.stringify({
-            input: history.inputInfo,
-            parameters: {}
+            inputInfo: history.inputInfo,
+            parameters: history.parameters
         }), '/opt/mctr/i/info');
         socket.data.terminal = new Terminal({allowProposedApi: true});
         socket.data.terminalSerializer = new SerializeAddon();
@@ -52,7 +60,6 @@ handles[SocketMessageType.Terminal] = (server: DefaultSocketServer, socket: Defa
         });
         let sockets = PlatformServer.wsServer.manager.getModelSockets(model);
         PlatformServer.wsServer.manager.sendTerminal(socket.data.terminalBuffer, sockets);
-
         console.log('Buffer flushed:', socket.data.terminalBuffer.length);
         socket.data.terminalBuffer = '';
         socket.data.waitTerminalFlushTimeout = false;
@@ -62,20 +69,43 @@ handles[SocketMessageType.Terminal] = (server: DefaultSocketServer, socket: Defa
 handles[SocketMessageType.ProcessEnd] = (server: DefaultSocketServer, socket: DefaultSocket, message: any) => {
     let model = Model.getModel(socket.data.modelPath);
     let history = model.lastHistory;
+    // WARNING: multer와 같은 hash 기반 이름으로 통일
     history.outputPath = 'resources/' + uuid();
     (async () => {
+        let config = model.config;
+        let docker = new Docker(config.dockerServer ? config.dockerServer : PlatformServer.config.defaultDockerServer);
+        let {container, containerInfo} = await DockerUtils.getContainerByName(docker, config.container);
+        await DockerUtils.exec(container, 'touch /opt/mctr/o/desc');
+        await DockerUtils.exec(container, 'touch /opt/mctr/o/info');
         await server.manager.getFile(socket, history.outputPath as string, '/opt/mctr/o/raw');
         history.description = await server.manager.getFileAsText(socket, '/opt/mctr/o/desc');
+        history.outputInfo = await server.manager.getFileAsText(socket, '/opt/mctr/o/info');
         history.outputPath = '/' + history.outputPath;
         model.lastHistory = history;
         let sockets = PlatformServer.wsServer.manager.getModelSockets(model);
         PlatformServer.wsServer.manager.sendUpdateModel(model, sockets);
+
+        let modelData = model.data;
+        modelData.status = ContainerStatus.UNDEPLOYING;
+        model.data = modelData;
+        PlatformServer.wsServer.manager.sendUpdateModels();
+
+        // WARNING: stop 전에 모든 데이터 삭제
+        await container.stop();
+
+        modelData.status = ContainerStatus.OFF;
+        model.data = modelData;
+        PlatformServer.wsServer.manager.sendUpdateModels();
     })();
 }
 
 handles[SocketMessageType.File] = (server: DefaultSocketServer, socket: DefaultSocket, message: any) => {
-    socket.data.receiveMode = SocketReceiveMode.FILE;
     socket.data.fileSize = message.fileSize;
+    if (socket.data.fileSize === 0) {
+        server.manager.json({msg: SocketMessageType.FileReceiveEnd}, [socket]);
+        socket.data.fileReceiveResolver();
+    }
+    socket.data.receiveMode = SocketReceiveMode.FILE;
     socket.data.receivedBytes = 0;
     socket.pipe(socket.data.writeStream);
     server.manager.json({msg: SocketMessageType.WaitReceive}, [socket]);
@@ -102,7 +132,7 @@ export default class DefaultSocketHandler implements SocketHandler<DefaultSocket
                     console.error(e);
                     console.error(`split.length=${split.length}, dataString.length=${dataString.length}`);
                     console.error(`split=${JSON.stringify(split)}, dataString=${JSON.stringify(dataString)}`);
-                    process.exit(1);
+                    // process.exit(1);
                 }
                 console.log('DefaultSocketHandler.onMessage', message);
                 handles[message.msg](server, socket, message);

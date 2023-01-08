@@ -15,8 +15,8 @@ const thumb: CSSProperties = {
     border: '1px solid #eaeaea',
     marginBottom: 8,
     marginRight: 8,
-    width: 100,
-    height: 100,
+    width: 50,
+    height: 50,
     padding: 4,
     boxSizing: 'border-box'
 };
@@ -35,7 +35,8 @@ const img: CSSProperties = {
 
 type IFile = File & { preview?: string };
 
-export default function GeneralSingleFileUploader({model}: { model: ModelData }) {
+export default function SingleImageUploader({model, parameters}: { model: ModelData, parameters: any }) {
+    const config = model?.config;
     const [files, setFiles] = useState<IFile[]>([]);
     const [hideDropzone, setHideDropzone] = useState<boolean>(!(model.status === 'off' || model.status === 'error'));
     const [uploadExplain, setUploadExplain] = useState<string>('');
@@ -65,6 +66,7 @@ export default function GeneralSingleFileUploader({model}: { model: ModelData })
                 data.append('files', file, file.name);
             }
             data.append('modelUniqueName', model.uniqueName);
+            data.append('parameters', JSON.stringify(parameters));
 
             let result = await fetch('/api/upload', {
                 method: 'POST',
@@ -107,7 +109,8 @@ export default function GeneralSingleFileUploader({model}: { model: ModelData })
                 <div {...getRootProps({className: 'dropzone'})} style={hideDropzone ? {display: 'none'} : {}}
                 >
                     <input {...getInputProps()} />
-                    <p>Drag 'n' drop some files here, or click to select files</p>
+                    <p className='mb-0'>Drag & drop or click to upload</p>
+                    <p className='mb-0'>Support format: {config!.output.options.format.join(', ')}</p>
                 </div>
                 <aside style={thumbsContainer}>
                     {thumbs}
@@ -126,10 +129,7 @@ export default function GeneralSingleFileUploader({model}: { model: ModelData })
             <br/>
             {inputInfo.mimetype.startsWith('image') ? <img src={inputInfo.webPath} style={{
                 objectFit: 'contain',
-                maxHeight: '40vh',
                 maxWidth: '100%',
-                overflow: 'hidden',
-                paddingBottom: '55px'
             }}/> : <></>}
         </>
     }

@@ -7,7 +7,7 @@ export type ConfigData = {
     name: string;
     explain: string;
     container: string;
-    input: { module: string, options: any };
+    input: { module: string, options: any, form: { schema: any, uischema: any, data: any } };
     output: { module: string, options: any };
 }
 
@@ -26,6 +26,7 @@ export type ModelData = {
     path: string;
     hierarchy: string[];
     name: string;
+    configName: string;
     uniqueName: string;
     config?: ConfigData;
     lastHistory?: HistoryData;

@@ -3,7 +3,7 @@
   "explain": "KoGPT를 이용한 자연어 추론 모델입니다.\n\nYYYY-MM-DD일 최신화 완료",
   "container": "NLP-Model1",
   "input": {
-    "module": "GeneralSingleFileUploader",
+    "module": "SingleImageUploader",
     "options": {
       "format": [
         "txt"
@@ -11,7 +11,7 @@
     }
   },
   "output": {
-    "module": "GeneralSinglePhotoViewer",
+    "module": "SingleImageViewer",
     "options": {
       "format": [
         "txt"

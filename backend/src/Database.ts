@@ -1,5 +1,5 @@
 import {JSONFileSync, LowSync} from "@commonify/lowdb"
-import {Data, HistoryData, ModelData, Models} from "./types/Types";
+import {ContainerStatus, Data, HistoryData, ModelData, Models} from "./types/Types";
 
 export default class Database {
     private static instance: Database;
@@ -22,7 +22,7 @@ export default class Database {
         let models: Models = Database.db.data?.models as Models;
         let modelData: ModelData;
         if (!models[path]) {
-            models[path] = {status: 'off'};
+            models[path] = {status: ContainerStatus.OFF};
             Database.db.write();
         }
         modelData = models[path];

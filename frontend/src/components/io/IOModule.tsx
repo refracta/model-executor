@@ -1,11 +1,15 @@
 import React from 'react';
-import GeneralSinglePhotoViewer from "./output/GeneralSinglePhotoViewer";
-import GeneralSingleFileUploader from "./input/GeneralSingleFileUploader";
+import SingleImageViewer from "./output/SingleImageViewer";
+import SingleImageUploader from "./input/SingleImageUploader";
 import {ModelData} from "../../types/Types";
 
-let modules = [GeneralSinglePhotoViewer, GeneralSingleFileUploader];
+let modules = [SingleImageViewer, SingleImageUploader];
 
-export default function IOModule({moduleName, model}: { moduleName: string, model: ModelData }) {
-    let Module = modules.find(m => m.name === moduleName) as (props: { model: ModelData }) => JSX.Element;
-    return (<Module model={model}></Module>);
+export default function IOModule({
+                                     moduleName,
+                                     model,
+                                     parameters
+                                 }: { moduleName: string, model: ModelData, parameters?: any }) {
+    let Module = modules.find(m => m.name === moduleName) as (props: { model: ModelData, parameters?: any }) => JSX.Element;
+    return (<Module model={model} parameters={parameters}></Module>);
 }

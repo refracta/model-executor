@@ -2,14 +2,13 @@ import {Socket as NetSocket} from "net";
 import {WebSocket} from "ws";
 import WSServer from "../server/WSServer";
 import SocketServer from "../server/SocketServer";
-import HTTPServer from "../server/HTTPServer";
 import DefaultSocketManager from "../server/impl/manager/DefaultSocketManager";
 import DefaultWSManager from "../server/impl/manager/DefaultWSManager";
 import stream from "stream";
 import {Terminal} from "xterm-headless";
 import {SerializeAddon} from "xterm-addon-serialize";
 
-
+// TODO: config 타입 결정
 
 export type ISocket = NetSocket & { id: string };
 type Resolver = (value?: unknown) => void;
@@ -66,6 +65,14 @@ export enum SocketReceiveMode {
     FILE
 }
 
+export enum ContainerStatus {
+    DEPLOYING = 'deploying',
+    UNDEPLOYING = 'undeploying',
+    RUNNING = 'running',
+    ERROR = 'error',
+    OFF = 'off',
+}
+
 
 export type ModelData = {
     status: string;
@@ -79,6 +86,7 @@ export type HistoryData = {
     modelPath: string;
     inputPath?: string;
     inputInfo?: any;
+    parameters?: any;
     outputPath?: string;
     outputInfo?: any;
     description?: string;

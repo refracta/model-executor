@@ -7,6 +7,7 @@ import PlatformServer from "../../core/PlatformServer";
 import Docker from "dockerode";
 import DockerUtils from "../../../utils/DockerUtils";
 import {HTTPHandler} from "../../../types/Interfaces";
+import {ContainerStatus} from "../../../types/Types";
 
 type File = Express.Multer.File & { webPath?: string };
 const upload = multer({dest: 'resources/'});
@@ -26,6 +27,14 @@ export default class DefaultHTTPHandler implements HTTPHandler {
         });
 
         httpServer.app.post('/api/upload', upload.fields([{name: 'files'}, {name: 'modelUniqueName'}]), async (req, res, next) => {
+            let parameters;
+            try {
+                parameters = JSON.parse(req.body.parameters);
+            } catch (e) {
+                res.json({status: 'fail'});
+                return;
+            }
+
             let model = Model.getModel(req.body.modelUniqueName);
             let modelData = model.data;
             if (!(modelData.status === 'off' || modelData.status === 'error')) {
@@ -42,16 +51,17 @@ export default class DefaultHTTPHandler implements HTTPHandler {
             let historyIndex = Database.Instance.addHistoryData({
                 modelPath: model.path,
                 inputPath: file?.path,
-                inputInfo: file
+                inputInfo: file,
+                parameters
             });
-            model.data = {...model.data, status: 'deploying', historyIndex};
+            model.data = {...model.data, status: ContainerStatus.DEPLOYING, historyIndex};
             PlatformServer.wsServer.manager.sendUpdateModels();
 
             let config = model.config;
             let docker = new Docker(config.dockerServer ? config.dockerServer : PlatformServer.config.defaultDockerServer);
             let {container, containerInfo} = await DockerUtils.getContainerByName(docker, config.container);
             if (!containerInfo) {
-                model.data = {...model.data, status: 'error'};
+                model.data = {...model.data, status: ContainerStatus.ERROR};
                 PlatformServer.wsServer.manager.sendUpdateModels();
                 return;
             }
@@ -65,11 +75,11 @@ export default class DefaultHTTPHandler implements HTTPHandler {
                 setTimeout(async () => {
                     await DockerUtils.exec(container, `chmod 777 /opt/mctr/controller && /opt/mctr/controller ${PlatformServer.config.socketExternalHost} ${PlatformServer.config.socketPort} ${Buffer.from(model.path).toString('base64')} >> /opt/mctr/debug 2>&1`);
                 });
-                model.data = {...model.data, status: 'running'};
+                model.data = {...model.data, status: ContainerStatus.RUNNING};
                 PlatformServer.wsServer.manager.sendUpdateModels();
             } catch (e) {
                 console.error(e);
-                model.data = {...model.data, status: 'error'};
+                model.data = {...model.data, status: ContainerStatus.ERROR};
                 PlatformServer.wsServer.manager.sendUpdateModels();
                 return;
             }

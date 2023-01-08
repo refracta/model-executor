@@ -7,9 +7,12 @@ type Handle = (client: DefaultSocketClient, socket: DefaultSocket, message: any)
 let handles: { [messageType: string]: Handle } = {};
 
 handles[SocketMessageType.File] = (client: DefaultSocketClient, socket: DefaultSocket, message: any) => {
+    socket.data.fileSize = message.fileSize;
+    if (socket.data.fileSize === 0) {
+        return;
+    }
     socket.data.receiveMode = SocketReceiveMode.FILE;
     socket.data.filePath = message.filePath;
-    socket.data.fileSize = message.fileSize;
     socket.data.receivedBytes = 0;
     socket.data.writeStream = fs.createWriteStream(socket.data.filePath)
     socket.pipe(socket.data.writeStream);
@@ -97,13 +100,13 @@ export default class DefaultSocketHandler implements SocketHandler<DefaultSocket
             socket.data.receivedBytes += data.length;
             if (socket.data.receivedBytes == socket.data.fileSize) {
                 socket.unpipe(socket.data.writeStream);
-                socket.data.writeStream.write(data, function () {
+                socket.data.writeStream.write(data, () => {
                     socket.data.writeStream?.destroy?.();
                 });
                 socket.resume();
                 socket.data.receiveMode = SocketReceiveMode.JSON;
                 client.manager.json({msg: SocketMessageType.FileReceiveEnd});
-                socket.data.fileReceiveResolver();
+                // socket.data.fileReceiveResolver();
             }
         }
     }

@@ -105,6 +105,7 @@ export default class Model {
         return {
             hierarchy: this.hierarchy,
             name: this.name,
+            configName: this.config.name,
             uniqueName: this.uniqueName,
             status: this.data.status
         };

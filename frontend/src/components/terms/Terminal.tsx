@@ -7,6 +7,8 @@ import {AppData} from "../../types/Types";
 let terminal: XTerm;
 let lastResize: string;
 let global: any = window;
+
+// TODO: 아직까지도 터미널 출력 반복 현상 관찰됨
 export default function Terminal({data, fitAddon}: { data: AppData, fitAddon: FitAddon }) {
     useEffect(() => {
         // WARNING: ref hook로 수정 가능한지 알아볼 것
@@ -23,10 +25,17 @@ export default function Terminal({data, fitAddon}: { data: AppData, fitAddon: Fi
         });
 
 
-        const resizeObserver = new ResizeObserver(function (entries) {
-            // since we are observing only a single element, so we access the first element in entries array
+        const resizeObserver = new ResizeObserver(entries => {
             try {
-                fitAddon && fitAddon.fit();
+                let width = document.querySelector('.terminal')?.clientWidth;
+                for (let i = 0; i < 25; i++) {
+                    fitAddon && fitAddon.fit();
+                    let currentWidth = document.querySelector('.terminal')?.clientWidth;
+                    if (width == currentWidth) {
+                        break;
+                    }
+                    width = currentWidth;
+                }
             } catch (err) {
                 console.log(err);
             }
@@ -53,7 +62,7 @@ export default function Terminal({data, fitAddon}: { data: AppData, fitAddon: Fi
                     return;
                 }
                 isWorking = true;
-                setTimeout(async _ => {
+                setTimeout(async () => {
                     function write(data: string) {
                         return new Promise(resolve => {
                             terminal.write(data, () => resolve(void 0));
@@ -76,6 +85,7 @@ export default function Terminal({data, fitAddon}: { data: AppData, fitAddon: Fi
             terminal.clear();
             if (terminalData) {
                 terminal.write(terminalData);
+                terminal.scrollToBottom();
             }
         }
     }, [terminalData, data.model]);

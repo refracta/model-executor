@@ -3,18 +3,18 @@
   "explain": "GAN을 이용한 업스케일링 모델 v2",
   "container": "test",
   "input": {
-    "module": "GeneralSingleFileUploader",
+    "module": "SingleImageUploader",
     "options": {
       "format": [
-        "png"
+        "image"
       ]
     }
   },
   "output": {
-    "module": "GeneralSinglePhotoViewer",
+    "module": "SingleImageViewer",
     "options": {
       "format": [
-        "png"
+        "image"
       ]
     }
   }

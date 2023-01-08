@@ -44,7 +44,7 @@ function menuify(renderHierarchy: { [key: string | symbol]: any }, uniqueName?: 
 
         return (<MenuItem icon={<FaStar/>} active={model.uniqueName == uniqueName}
                           suffix={toBadge(model.status)}
-                          key={pathKey}>{model.name}<Link to={`/model/${model.uniqueName}`}></Link></MenuItem>);
+                          key={pathKey}>{model.configName}<Link to={`/model/${model.uniqueName}`}></Link></MenuItem>);
     } else {
         let children = keys.map(key => menuify(renderHierarchy[key], uniqueName, key, pathKey));
         if (!current) {
