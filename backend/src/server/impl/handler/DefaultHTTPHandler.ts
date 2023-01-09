@@ -55,6 +55,7 @@ export default class DefaultHTTPHandler implements HTTPHandler {
                 parameters
             });
             model.data = {...model.data, status: ContainerStatus.DEPLOYING, historyIndex};
+            PlatformServer.wsServer.manager.sendUpdateModel(model, PlatformServer.wsServer.manager.getModelSockets(model));
             PlatformServer.wsServer.manager.sendUpdateModels();
 
             let config = model.config;
@@ -62,6 +63,7 @@ export default class DefaultHTTPHandler implements HTTPHandler {
             let {container, containerInfo} = await DockerUtils.getContainerByName(docker, config.container);
             if (!containerInfo) {
                 model.data = {...model.data, status: ContainerStatus.ERROR};
+                PlatformServer.wsServer.manager.sendUpdateModel(model, PlatformServer.wsServer.manager.getModelSockets(model));
                 PlatformServer.wsServer.manager.sendUpdateModels();
                 return;
             }
@@ -76,16 +78,13 @@ export default class DefaultHTTPHandler implements HTTPHandler {
                     await DockerUtils.exec(container, `chmod 777 /opt/mctr/controller && /opt/mctr/controller ${PlatformServer.config.socketExternalHost} ${PlatformServer.config.socketPort} ${Buffer.from(model.path).toString('base64')} >> /opt/mctr/debug 2>&1`);
                 });
                 model.data = {...model.data, status: ContainerStatus.RUNNING};
-                PlatformServer.wsServer.manager.sendUpdateModels();
             } catch (e) {
                 console.error(e);
                 model.data = {...model.data, status: ContainerStatus.ERROR};
-                PlatformServer.wsServer.manager.sendUpdateModels();
-                return;
-            }
 
-            let sockets = PlatformServer.wsServer.manager.getModelSockets(model);
-            PlatformServer.wsServer.manager.sendUpdateModel(model, sockets);
+            }
+            PlatformServer.wsServer.manager.sendUpdateModel(model, PlatformServer.wsServer.manager.getModelSockets(model));
+            PlatformServer.wsServer.manager.sendUpdateModels();
         });
     }
 }

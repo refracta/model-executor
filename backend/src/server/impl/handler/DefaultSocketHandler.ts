@@ -82,12 +82,12 @@ handles[SocketMessageType.ProcessEnd] = (server: DefaultSocketServer, socket: De
         history.outputInfo = await server.manager.getFileAsText(socket, '/opt/mctr/o/info');
         history.outputPath = '/' + history.outputPath;
         model.lastHistory = history;
-        let sockets = PlatformServer.wsServer.manager.getModelSockets(model);
-        PlatformServer.wsServer.manager.sendUpdateModel(model, sockets);
+        PlatformServer.wsServer.manager.sendUpdateModel(model, PlatformServer.wsServer.manager.getModelSockets(model));
 
         let modelData = model.data;
         modelData.status = ContainerStatus.UNDEPLOYING;
         model.data = modelData;
+        PlatformServer.wsServer.manager.sendUpdateModel(model, PlatformServer.wsServer.manager.getModelSockets(model));
         PlatformServer.wsServer.manager.sendUpdateModels();
 
         // WARNING: stop 전에 모든 데이터 삭제
@@ -95,6 +95,7 @@ handles[SocketMessageType.ProcessEnd] = (server: DefaultSocketServer, socket: De
 
         modelData.status = ContainerStatus.OFF;
         model.data = modelData;
+        PlatformServer.wsServer.manager.sendUpdateModel(model, PlatformServer.wsServer.manager.getModelSockets(model));
         PlatformServer.wsServer.manager.sendUpdateModels();
     })();
 }
