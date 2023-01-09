@@ -1,6 +1,6 @@
 import React, {CSSProperties} from 'react';
 import {Card} from 'react-bootstrap';
-import {ModelData} from "../../../types/Types";
+import {ModelData} from "../../../../types/Types";
 
 const img: CSSProperties = {
     maxWidth: '100%',

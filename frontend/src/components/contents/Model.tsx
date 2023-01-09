@@ -1,17 +1,18 @@
 import React, {useEffect, useRef, useState} from 'react';
 import Split from 'react-split'
 
-import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import {AppData, ModelData} from "../../types/Types";
-import IOModule from "../io/IOModule";
-import Terminal from "../terms/Terminal";
+import InputModule from "../card/module/InputModule";
+import Terminal from "../terminal/Terminal";
 import {FitAddon} from "xterm-addon-fit";
 import {JsonForms} from '@jsonforms/react';
 import {materialCells, materialRenderers} from '@jsonforms/material-renderers';
-import {Button, Nav, Tab} from "react-bootstrap";
+import {Button, Card, Nav, Tab} from "react-bootstrap";
+
 import ReactJson from "react-json-view";
+import OutputDescriptionModule from "../card/module/OutputDescriptionModule";
 
 function download(dataurl: string, filename: string) {
     const link = document.createElement("a");
@@ -68,11 +69,9 @@ export default function Model({data}: { data: AppData }) {
                                 <Card.Title className='mb-0'>{config!.name}</Card.Title>
                             </Card.Header>
                             <Card.Body>
-                                <div className='p-md-3'>
-                                    <Card.Text>
-                                        <span style={{whiteSpace: "pre-wrap"}}>{config!.explain}</span>
-                                    </Card.Text>
-                                </div>
+                                <Card.Text>
+                                    <span style={{whiteSpace: "pre-wrap"}}>{config!.explain}</span>
+                                </Card.Text>
                             </Card.Body>
                         </Card>
                         <Card className='card-parameter mb-2 h-50'>
@@ -88,24 +87,22 @@ export default function Model({data}: { data: AppData }) {
                                     </Nav>
                                 </Card.Header>
                                 <Card.Body>
-                                    <div className='p-md-3'>
-                                        <Tab.Content>
-                                            <Tab.Pane eventKey="parameters-default">
-                                                {form?.schema && Object.keys(form?.schema).length ? <JsonForms
-                                                    schema={form?.schema}
-                                                    data={form?.data}
-                                                    uischema={form?.uischema}
-                                                    renderers={materialRenderers}
-                                                    cells={materialCells}
-                                                    readonly={model.status !== 'off'}
-                                                    onChange={({errors, data}) => setParameters(data)}
-                                                /> : <></>}
-                                            </Tab.Pane>
-                                            <Tab.Pane eventKey="parameters-json">
-                                                <ReactJson src={parameters}/>
-                                            </Tab.Pane>
-                                        </Tab.Content>
-                                    </div>
+                                    <Tab.Content>
+                                        <Tab.Pane eventKey="parameters-default">
+                                            {form?.schema && Object.keys(form?.schema).length ? <JsonForms
+                                                schema={form?.schema}
+                                                data={form?.data}
+                                                uischema={form?.uischema}
+                                                renderers={materialRenderers}
+                                                cells={materialCells}
+                                                readonly={model.status !== 'off'}
+                                                onChange={({errors, data}) => setParameters(data)}
+                                            /> : <></>}
+                                        </Tab.Pane>
+                                        <Tab.Pane eventKey="parameters-json">
+                                            <ReactJson src={parameters}/>
+                                        </Tab.Pane>
+                                    </Tab.Content>
                                 </Card.Body>
                             </Tab.Container>
                         </Card>
@@ -118,10 +115,8 @@ export default function Model({data}: { data: AppData }) {
                                 }}>Reset</Button> : <></>}
                             </Card.Header>
                             <Card.Body className='input-upload-card-body'>
-                                <div className='p-md-3'>
-                                    <IOModule moduleName={config!.input.module} model={model}
-                                              parameters={parameters}/>
-                                </div>
+                                <InputModule moduleName={config!.input.module} model={model}
+                                             parameters={parameters}/>
                             </Card.Body>
                         </Card>
                     </Col>
@@ -131,30 +126,18 @@ export default function Model({data}: { data: AppData }) {
                                 <Card.Title className='mb-0 float-start'>Output {model?.lastHistory ?
                                     <span className="badge green">Last executed</span> : ''}</Card.Title>
                                 {model?.lastHistory ? <Button className='float-end btn-sm info' onClick={async (e) => {
-                                    let outputName = model.lastHistory?.outputInfo.fileName;
+                                    let outputName = model.lastHistory?.outputInfo?.output?.fileName;
                                     let name = outputName ? outputName : 'output_' + model.lastHistory?.inputInfo.originalname;
                                     // Temporal
                                     download(model.lastHistory?.outputPath as string, name);
                                 }}>Download</Button> : <></>}
                             </Card.Header>
                             <Card.Body>
-                                <div className='p-md-3'>
-                                    <IOModule moduleName={config!.output.module} model={model}/>
-                                </div>
+                                <InputModule moduleName={config!.output.module} model={model}/>
                             </Card.Body>
                         </Card>
                         <Card className='card-output-description mb-2'>
-                            <Card.Header>
-                                <Card.Title className='mb-0'>Output description {model?.lastHistory ?
-                                    <span className="badge green">Last executed</span> : ''}</Card.Title>
-                            </Card.Header>
-                            <Card.Body>
-                                <div className='p-md-3'>
-                                    <Card.Text>
-                                        <span style={{whiteSpace: "pre-wrap"}}>{model.lastHistory?.description}</span>
-                                    </Card.Text>
-                                </div>
-                            </Card.Body>
+                            <OutputDescriptionModule data={data}/>
                         </Card>
                     </Col>
                 </Row>

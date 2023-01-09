@@ -1,11 +1,11 @@
 import React from 'react';
 import SingleImageViewer from "./output/SingleImageViewer";
 import SingleImageUploader from "./input/SingleImageUploader";
-import {ModelData} from "../../types/Types";
+import {ModelData} from "../../../types/Types";
 
-let modules = [SingleImageViewer, SingleImageUploader];
+let modules = [SingleImageUploader];
 
-export default function IOModule({
+export default function OutputModule({
                                      moduleName,
                                      model,
                                      parameters

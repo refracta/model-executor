@@ -14,9 +14,11 @@ export default function SiteMenu() {
         </MenuItem>
         <MenuItem active={isMatch("/history")} icon={<FaHistory/>}>
             History
-            <Link to="/history"/></MenuItem>
+            <Link to="/history"/>
+        </MenuItem>
         <MenuItem active={isMatch("/setting")} icon={<AiFillSetting/>}>
             Setting
-            <Link to="/setting"/></MenuItem>
+            <Link to="/setting"/>
+        </MenuItem>
     </Menu>;
 }

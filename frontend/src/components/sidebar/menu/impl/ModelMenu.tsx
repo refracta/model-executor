@@ -45,17 +45,11 @@ function menuify(renderHierarchy: { [key: string | symbol]: any }, uniqueName?: 
     } else {
         let children = keys.map(key => menuify(renderHierarchy[key], uniqueName, key, pathKey));
         if (!current) {
-            return (
-                <>
-                    {children}
-                </>
-            );
+            return <>{children}</>;
         } else {
-            return (
-                <SubMenu defaultOpen={true} key={pathKey} title={current}>
-                    {children}
-                </SubMenu>
-            );
+            return <SubMenu defaultOpen={true} key={pathKey} title={current}>
+                {children}
+            </SubMenu>;
         }
     }
 }

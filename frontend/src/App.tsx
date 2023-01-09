@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Navigate, Route, Routes, useMatch} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './components/hack/card/MarginCardBodyReplacer';
 import './styles/App.scss';
 import './styles/Dropzone.css';
 import './styles/Split.css';

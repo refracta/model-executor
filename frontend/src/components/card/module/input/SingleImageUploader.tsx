@@ -1,6 +1,6 @@
 import React, {CSSProperties, useEffect, useState} from 'react';
 import {useDropzone} from 'react-dropzone';
-import {ModelData} from "../../../types/Types";
+import {ModelData} from "../../../../types/Types";
 
 const thumbsContainer: CSSProperties = {
     display: 'flex',
@@ -40,6 +40,7 @@ export default function SingleImageUploader({model, parameters}: { model: ModelD
     const [files, setFiles] = useState<IFile[]>([]);
     const [hideDropzone, setHideDropzone] = useState<boolean>(!(model.status === 'off' || model.status === 'error'));
     const [uploadExplain, setUploadExplain] = useState<string>('');
+
     useEffect(() => {
         setFiles([]);
         setUploadExplain(model.status === 'error' ? 'Model executing error...' : '');
