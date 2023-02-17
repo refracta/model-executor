@@ -1,5 +1,5 @@
 import {JSONFileSync, LowSync} from "@commonify/lowdb"
-import {ContainerStatus, Data, HistoryData, ModelData, Models} from "./types/Types";
+import {ModelStatus, Data, HistoryData, ModelData, Models} from "./types/Types";
 
 export default class Database {
     private static instance: Database;
@@ -22,7 +22,7 @@ export default class Database {
         let models: Models = Database.db.data?.models as Models;
         let modelData: ModelData;
         if (!models[path]) {
-            models[path] = {status: ContainerStatus.OFF};
+            models[path] = {status: ModelStatus.OFF};
             Database.db.write();
         }
         modelData = models[path];
@@ -35,20 +35,26 @@ export default class Database {
         Database.db.write();
     }
 
+    getHistories(): HistoryData[] {
+        return Database.db.data?.histories as HistoryData[];
+    }
+
     getHistoryData(index: number): HistoryData {
-        let histories: HistoryData[] = Database.db.data?.histories as HistoryData[];
+        let histories: HistoryData[] = this.getHistories();
         return histories[index];
     }
 
     setHistoryData(index: number, data: HistoryData) {
-        let histories: HistoryData[] = Database.db.data?.histories as HistoryData[];
+        let histories: HistoryData[] = this.getHistories();
         histories[index] = data;
         Database.db.write();
     }
 
     addHistoryData(historyData: HistoryData): number {
-        let histories: HistoryData[] = Database.db.data?.histories as HistoryData[];
+        let histories: HistoryData[] = this.getHistories();
+        historyData = {...historyData, number: histories.length + 1};
         histories.push(historyData);
+        Database.db.write();
         return histories.length - 1;
     }
 }

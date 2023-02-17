@@ -1,15 +1,18 @@
 import React from 'react';
 import SingleImageViewer from "./output/SingleImageViewer";
-import SingleImageUploader from "./input/SingleImageUploader";
-import {ModelData} from "../../../types/Types";
+import {AppProps} from "../../../types/Types";
+import SingleTextViewer from "./output/SingleTextViewer";
 
-let modules = [SingleImageUploader];
+let modules = [SingleImageViewer, SingleTextViewer];
 
-export default function OutputModule({
-                                     moduleName,
-                                     model,
-                                     parameters
-                                 }: { moduleName: string, model: ModelData, parameters?: any }) {
-    let Module = modules.find(m => m.name === moduleName) as (props: { model: ModelData, parameters?: any }) => JSX.Element;
-    return (<Module model={model} parameters={parameters}></Module>);
+export default function OutputModule({context}: AppProps) {
+    let model = context.model;
+    let history = context.history;
+    let target = context.path.startsWith('model') ? model?.config?.output.module : history?.outputModule;
+    let Module = modules.find(m => m.name === target) as (props: AppProps) => JSX.Element;
+    if (Module) {
+        return <Module context={context}/>;
+    } else {
+        return <></>;
+    }
 }

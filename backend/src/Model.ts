@@ -53,7 +53,7 @@ export default class Model {
         return Model.uniqueNameMap[this.path];
     }
 
-    static getModels(path: string = 'models' + '/'): Model[] {
+    static _getModels(path: string = 'models' + '/'): Model[] {
         let models: Model[] = [];
         let dir: string[] = fs.readdirSync(path);
         if (dir.includes('config.json')) {
@@ -69,11 +69,26 @@ export default class Model {
         return models;
     }
 
-    static updateMaps() {
-        let models = Model.getModels();
+    // WARNING: 향후 설계 변경 요망
+    static getModels(path: string = 'models' + '/'): Model[] {
+        let models = this._getModels(path);
         this.uniqueNameMap = Model.getUniqueNameMap(models);
         this.modelMap = Model.getModelMap(models, this.uniqueNameMap);
+        return models;
     }
+
+
+    static updateMaps() {
+        Model.getModels();
+    }
+
+    /*
+        static updateMaps() {
+            let models = Model.getModels();
+            this.uniqueNameMap = Model.getUniqueNameMap(models);
+            this.modelMap = Model.getModelMap(models, this.uniqueNameMap);
+        }
+    */
 
     static getModel(uniqueNameOrPath: string): Model {
         return this.modelMap[uniqueNameOrPath];

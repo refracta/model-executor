@@ -25,7 +25,6 @@
 }
 
 
-
 @media (max-width: 768px) {
   main {
     overflow: auto !important;
@@ -68,4 +67,35 @@
 
 .card-output-description {
   height: calc(25% + 0.5rem);
+}
+
+.thumbs-container {
+  display: flex;
+  flexDirection: row;
+  flexWrap: wrap;
+  marginTop: 16
+}
+
+.thumb {
+  display: inline-flex;
+  borderRadius: 2;
+  border: 1px solid #eaeaea;
+  marginBottom: 8;
+  marginRight: 8;
+  width: 50px;
+  height: 50px;
+  padding: 4px;
+  boxSizing: border-box
+}
+
+.thumb-inner {
+  display: flex;
+  minWidth: 0;
+  overflow: hidden
+}
+
+.thumb-image {
+  display: block;
+  width: auto;
+  height: 100%
 }

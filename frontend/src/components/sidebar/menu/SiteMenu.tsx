@@ -12,7 +12,7 @@ export default function SiteMenu() {
             Model
             <Link to="/model"/>
         </MenuItem>
-        <MenuItem active={isMatch("/history")} icon={<FaHistory/>}>
+        <MenuItem active={isMatch("/history/*")} icon={<FaHistory/>}>
             History
             <Link to="/history"/>
         </MenuItem>

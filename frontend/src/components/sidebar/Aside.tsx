@@ -1,20 +1,20 @@
 import React from 'react';
 import {Menu, ProSidebar, SidebarContent, SidebarHeader} from "react-pro-sidebar";
 import {Route, Routes} from 'react-router-dom';
-import {AppData} from "../../types/Types";
+import {AppProps} from "../../types/Types";
 import SiteMenu from "./menu/SiteMenu";
 import ModelMenu from "./menu/impl/ModelMenu";
 import HistoryMenu from "./menu/impl/HistoryMenu";
 import SettingMenu from "./menu/impl/SettingMenu";
 
-interface Props {
+type Props = {
     toggled: boolean,
     setToggled: (value: boolean) => void,
-    data: AppData,
     modelUniqueName?: string
-}
+    historyNumber?: number
+} & AppProps
 
-export default function Aside({toggled, setToggled, data, modelUniqueName}: Props) {
+export default function Aside({toggled, setToggled, context, modelUniqueName, historyNumber}: Props) {
     return (
         <ProSidebar breakPoint="md" toggled={toggled} onToggle={setToggled}>
             <SidebarHeader>
@@ -24,10 +24,10 @@ export default function Aside({toggled, setToggled, data, modelUniqueName}: Prop
                 <SiteMenu/>
                 <Menu className={'content-menu'}>
                     <Routes>
-                        <Route path="/model/" element={<ModelMenu data={data}/>}/>
+                        <Route path="/model/" element={<ModelMenu context={context}/>}/>
                         <Route path="/model/:uniqueName"
-                               element={<ModelMenu data={data} modelUniqueName={modelUniqueName}/>}/>
-                        <Route path="/history/*" element={<HistoryMenu/>}/>
+                               element={<ModelMenu context={context} modelUniqueName={modelUniqueName}/>}/>
+                        <Route path="/history/*" element={<HistoryMenu context={context} historyNumber={historyNumber}/>}/>
                         <Route path="/setting/*" element={<SettingMenu/>}/>
                     </Routes>
                 </Menu>

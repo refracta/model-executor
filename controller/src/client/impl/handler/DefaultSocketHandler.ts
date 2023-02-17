@@ -1,10 +1,14 @@
 import {SocketHandler} from "../../../types/Interfaces";
 import {DefaultSocket, DefaultSocketClient, SocketMessageType, SocketReceiveMode} from "../../../types/Types";
-import fs from "fs";
-import pty from "node-pty-prebuilt-multiarch";
+import * as fs from "fs";
+import * as pty from 'node-pty-prebuilt-multiarch';
 
 type Handle = (client: DefaultSocketClient, socket: DefaultSocket, message: any) => void;
 let handles: { [messageType: string]: Handle } = {};
+
+handles[SocketMessageType.Hello] = (client: DefaultSocketClient, socket: DefaultSocket, message: any) => {
+    // console.log(message);
+}
 
 handles[SocketMessageType.File] = (client: DefaultSocketClient, socket: DefaultSocket, message: any) => {
     socket.data.fileSize = message.fileSize;
@@ -14,13 +18,21 @@ handles[SocketMessageType.File] = (client: DefaultSocketClient, socket: DefaultS
     socket.data.receiveMode = SocketReceiveMode.FILE;
     socket.data.filePath = message.filePath;
     socket.data.receivedBytes = 0;
+
+    let pathSplit = socket.data.filePath.split('/');
+    pathSplit.pop();
+    fs.mkdirSync(pathSplit.join('/'), {recursive: true});
+
     socket.data.writeStream = fs.createWriteStream(socket.data.filePath)
-    socket.pipe(socket.data.writeStream);
     client.manager.sendFileWait();
 }
 
+handles[SocketMessageType.FileReceiveEnd] = (client: DefaultSocketClient, socket: DefaultSocket, message: any) => {
+    // console.log(message);
+}
+
 handles[SocketMessageType.LaunchModel] = (client: DefaultSocketClient, socket: DefaultSocket, message: any) => {
-    let ptyProcess = pty.spawn('bash', ['/opt/mctr/run'], {
+    let ptyProcess = pty.spawn('bash', [message.scriptPath], {
         name: 'xterm-color',
         cols: 181,
         rows: 14,
@@ -43,14 +55,14 @@ handles[SocketMessageType.TerminalResize] = (client: DefaultSocketClient, socket
 }
 
 handles[SocketMessageType.RequestFile] = (client: DefaultSocketClient, socket: DefaultSocket, message: any) => {
-    console.log('RequestFile: ' + JSON.stringify(message));
-    let fileSize = fs.statSync(message.filePath).size;
-    socket.data.readStream = fs.createReadStream(message.filePath);
+    let fileSize = fs.existsSync(message.filePath) ? fs.statSync(message.filePath).size : 0;
+    if (fileSize !== 0) {
+        socket.data.readStream = fs.createReadStream(message.filePath);
+    }
     client.manager.sendFile(fileSize);
 }
 
 handles[SocketMessageType.WaitReceive] = (client: DefaultSocketClient, socket: DefaultSocket, message: any) => {
-    console.log('WaitReceive');
     socket.data.readStream.pipe(socket, {end: false});
     socket.data.readStream.on('end', () => {
         socket.data.readStream?.close?.();
@@ -82,7 +94,7 @@ export default class DefaultSocketHandler implements SocketHandler<DefaultSocket
                     console.error(`split=${JSON.stringify(split)}, dataString=${JSON.stringify(dataString)}`);
                     process.exit(1);
                 }
-                console.log('DefaultSocketHandler.onMessage', message);
+                // console.log('DefaultSocketHandler.onMessage', message);
                 handles[message.msg](client, socket, message);
             }
             let message;
@@ -90,28 +102,34 @@ export default class DefaultSocketHandler implements SocketHandler<DefaultSocket
                 message = JSON.parse(lastMessageString);
                 socket.data.buffer = '';
             } catch (e) {
-                socket.data.buffer = lastMessageString;
+                if (lastMessageString !== undefined) {
+                    socket.data.buffer = lastMessageString;
+                }
             }
             if (message) {
-                console.log('DefaultSocketHandler.onMessage', message);
+                // console.log('DefaultSocketHandler.onMessage', message);
                 handles[message.msg](client, socket, message);
             }
         } else {
             socket.data.receivedBytes += data.length;
-            if (socket.data.receivedBytes == socket.data.fileSize) {
-                socket.unpipe(socket.data.writeStream);
-                socket.data.writeStream.write(data, () => {
+            if (socket.data.receivedBytes >= socket.data.fileSize) {
+                let delta = socket.data.receivedBytes - socket.data.fileSize;
+                let fileBytes = data.length - delta;
+                let fileData = data.subarray(0, fileBytes);
+                let bufferData = data.subarray(fileBytes + 1, data.length);
+                socket.data.buffer = bufferData.toString();
+                socket.data.writeStream.write(fileData, function () {
                     socket.data.writeStream?.destroy?.();
+                    socket.data.receiveMode = SocketReceiveMode.JSON;
+                    client.manager.json({msg: SocketMessageType.FileReceiveEnd});
                 });
-                socket.resume();
-                socket.data.receiveMode = SocketReceiveMode.JSON;
-                client.manager.json({msg: SocketMessageType.FileReceiveEnd});
                 // socket.data.fileReceiveResolver();
+            } else {
+                socket.data.writeStream.write(data);
             }
         }
     }
 
     onClose(client: DefaultSocketClient, socket: DefaultSocket, hadError: boolean): void {
     }
-
 }

@@ -62,4 +62,10 @@ export default class SocketServer<SocketData, Manager extends SocketManager> {
             console.log(`SocketServer: Listening on ${port}.`);
         });
     }
+
+    close() {
+        this.server.close(() => {
+            console.log(`SocketServer closed.`);
+        });
+    }
 }

@@ -49,7 +49,8 @@ export enum SocketMessageType {
     ProcessEnd = 'ProcessEnd',
     File = 'File',
     RequestFile = 'RequestFile',
-    WaitReceive = 'WaitReceive'
+    WaitReceive = 'WaitReceive',
+    LaunchModel = 'LaunchModel'
 }
 
 export enum WSMessageType {
@@ -57,7 +58,9 @@ export enum WSMessageType {
     TerminalResize = 'TerminalResize',
     Terminal = 'Terminal',
     UpdateModel = 'UpdateModel',
-    UpdateModels = 'UpdateModels'
+    UpdateModels = 'UpdateModels',
+    UpdateHistory = 'UpdateHistory',
+    UpdateHistories = 'UpdateHistories'
 }
 
 export enum SocketReceiveMode {
@@ -65,7 +68,7 @@ export enum SocketReceiveMode {
     FILE
 }
 
-export enum ContainerStatus {
+export enum ModelStatus {
     DEPLOYING = 'deploying',
     UNDEPLOYING = 'undeploying',
     RUNNING = 'running',
@@ -83,6 +86,9 @@ export type Models = {
 }
 
 export type HistoryData = {
+    number?: number;
+    modelName: string;
+    modelExplain: string;
     modelPath: string;
     inputPath?: string;
     inputInfo?: any;
@@ -91,10 +97,23 @@ export type HistoryData = {
     outputInfo?: any;
     description?: string;
     terminal?: string;
+    inputModule?: string;
+    outputModule?: string;
     time?: Date;
 }
 
 export type Data = {
     models: Models;
     histories: HistoryData[];
+}
+
+export type Paths = {
+    script?: string;
+    input?: string;
+    inputInfo?: string;
+    output?: string;
+    outputInfo?: string;
+    outputDescription?: string;
+    controllerPath?: string;
+    debugLog? :string;
 }

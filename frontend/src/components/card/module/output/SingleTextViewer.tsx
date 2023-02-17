@@ -1,6 +1,6 @@
-import React, {CSSProperties} from 'react';
+import React, {CSSProperties, useEffect, useState} from 'react';
 import {Button, Card} from 'react-bootstrap';
-import {AppProps, ModelStatus} from "../../../../types/Types";
+import {AppProps} from "../../../../types/Types";
 import {FileUtils} from "../../../../utils/FileUtils";
 
 const img: CSSProperties = {
@@ -16,14 +16,21 @@ function download(dataURL: string, fileName: string) {
 
 function renderModelView({context}: AppProps) {
     let model = context.model;
-    let config = model?.config;
     let history = model?.lastHistory;
-    let outputPath = model?.lastHistory?.outputPath;
+    let outputPath = history?.outputPath;
     let outputName = model?.lastHistory?.outputInfo?.fileName;
     let fileSizeExist = history?.outputInfo?.fileSize !== undefined;
     let fileSize = history?.outputInfo?.fileSize;
-    let outputExtensions = config!.output?.options?.format?.join(', ');
-    outputExtensions = outputExtensions ? outputExtensions : 'image';
+    let [text, setText] = useState<string>('');
+
+    useEffect(() => {
+        if (outputPath && fileSize !== 0) {
+            (async () => {
+                let text = await fetch('/' + outputPath).then(r => r.text());
+                setText(text);
+            })();
+        }
+    }, [outputPath, fileSize]);
 
     return <>
         <Card.Header>
@@ -31,19 +38,25 @@ function renderModelView({context}: AppProps) {
                 <span className="badge green">Last executed</span> : ''}</Card.Title>
             {outputPath && fileSize ? <Button className='float-end btn-sm info' onClick={async (e) => {
                 if (outputName) {
-                    download('/' + outputPath, outputName);
+                    download('/' + outputPath, outputName.endsWith('.txt') ? outputName : outputName + '.txt');
                 }
             }}>Download</Button> : <></>}
         </Card.Header>
         <Card.Body>
-            <Card.Text>Output format: {outputExtensions}
+            <Card.Text>Output format: text
                 <br/>
                 {fileSizeExist ? <>
                     <span style={{fontWeight: 'bold'}}>Size: </span>
                     <span>{FileUtils.formatBytes(history?.outputInfo.fileSize)}</span>
+                    <br/>
+                </> : <></>}
+                <br/>
+                {outputPath ? <>
+                    <span style={{fontWeight: 'bold'}}>Output: </span>
+                    <br/>
+                    <span style={{whiteSpace: "pre-wrap"}}>{text}</span>
                 </> : <></>}
             </Card.Text>
-            {outputPath ? <img style={img} src={'/' + outputPath}/> : <></>}
         </Card.Body>
     </>;
 }
@@ -54,28 +67,45 @@ function renderHistoryView({context}: AppProps) {
     let outputName = history?.outputInfo?.fileName;
     let fileSizeExist = history?.outputInfo?.fileSize !== undefined;
     let fileSize = history?.outputInfo?.fileSize;
+    let [text, setText] = useState<string>('');
+
+    useEffect(() => {
+        if (outputPath && fileSize !== 0) {
+            (async () => {
+                let text = await fetch('/' + outputPath).then(r => r.text());
+                setText(text);
+            })();
+        }
+    }, [outputPath, fileSize]);
+
     return <>
         <Card.Header>
             <Card.Title className='mb-0 float-start'>Output</Card.Title>
             {fileSize ? <Button className='float-end btn-sm info' onClick={async (e) => {
                 if (outputName) {
-                    download('/' + outputPath, outputName);
+                    download('/' + outputPath, outputName.endsWith('.txt') ? outputName : outputName + '.txt');
                 }
             }}>Download</Button> : <></>}
         </Card.Header>
         <Card.Body>
-            <Card.Text>
+            <Card.Text>Output format: text
+                <br/>
                 {fileSizeExist ? <>
                     <span style={{fontWeight: 'bold'}}>Size: </span>
                     <span>{FileUtils.formatBytes(history?.outputInfo.fileSize)}</span>
+                    <br/>
+                </> : <></>}
+                <br/>
+                {outputPath ? <>
+                    <span style={{fontWeight: 'bold'}}>Output: </span>
+                    <br/>
+                    <span style={{whiteSpace: "pre-wrap"}}>{text}</span>
                 </> : <></>}
             </Card.Text>
-            {context.history?.modelStatus === ModelStatus.OFF ?
-                <img style={img} src={'/' + history?.outputPath}/> : <></>}
         </Card.Body>
     </>;
 }
 
-export default function SingleImageViewer(props: AppProps) {
+export default function SingleTextViewer(props: AppProps) {
     return props.context.path.startsWith('model') ? renderModelView(props) : renderHistoryView(props);
 }

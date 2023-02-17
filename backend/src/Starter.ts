@@ -39,5 +39,4 @@ httpServer.callHandler(new DefaultHTTPHandler());
 wsServer.addHandler(new DefaultWSHandler());
 socketServer.addHandler(new DefaultSocketHandler());
 
-httpServer.listen(PlatformServer.config.httpPort);
-socketServer.listen(PlatformServer.config.socketPort);
+PlatformServer.listen();

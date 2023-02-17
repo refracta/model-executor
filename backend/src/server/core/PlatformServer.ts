@@ -23,13 +23,27 @@ export default class PlatformServer {
     static loadConfig() {
         if (!fs.existsSync('config.json')) {
             fs.writeFileSync('config.json', JSON.stringify({
-                httpPort: 0,
+                httpPort: 5000,
                 socketExternalHost: '',
-                socketPort: 0,
+                socketPort: 5050,
                 defaultDockerServer: {host: '', port: 0}
             }), 'utf8');
         }
         PlatformServer.config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
+    }
+
+    static listen() {
+        this.httpServer.listen(this.config.httpPort);
+        this.socketServer.listen(this.config.socketPort);
+    }
+
+    static close() {
+        this.httpServer.close();
+        this.socketServer.close();
+    }
+
+    static getDockerServer(dockerServer:any) {
+        return dockerServer ? this.config.dockerServers[dockerServer] : this.config.dockerServers[this.config.defaultDockerServer];
     }
 }
 

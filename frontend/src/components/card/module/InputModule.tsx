@@ -1,15 +1,18 @@
 import React from 'react';
-import SingleImageViewer from "./output/SingleImageViewer";
-import SingleImageUploader from "./input/SingleImageUploader";
-import {ModelData} from "../../../types/Types";
+import {AppProps} from "../../../types/Types";
+import SingleInputUploader from "./input/SingleInputUploader";
+import EmptyInputUploader from "./input/EmptyInputUploader";
 
-let modules = [SingleImageViewer, SingleImageUploader];
+let modules = [EmptyInputUploader, SingleInputUploader];
 
-export default function InputModule({
-                                     moduleName,
-                                     model,
-                                     parameters
-                                 }: { moduleName: string, model: ModelData, parameters?: any }) {
-    let Module = modules.find(m => m.name === moduleName) as (props: { model: ModelData, parameters?: any }) => JSX.Element;
-    return (<Module model={model} parameters={parameters}></Module>);
+export default function InputModule({context}: AppProps) {
+    let model = context.model;
+    let history = context.history;
+    let target = context.path.startsWith('model') ? model?.config?.input.module : history?.inputModule;
+    let Module = modules.find(m => m.name === target) as (props: AppProps) => JSX.Element;
+    if (Module) {
+        return <Module context={context}/>;
+    } else {
+        return <></>;
+    }
 }

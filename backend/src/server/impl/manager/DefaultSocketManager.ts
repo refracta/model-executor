@@ -16,7 +16,11 @@ export default class DefaultSocketManager extends SocketManager {
     }
 
     json(data: any, sockets: DefaultSocket[] = this.getAllSockets()) {
-        sockets.forEach(s => s.write(JSON.stringify(data)) + '\0');
+        sockets.forEach(s => s.write(JSON.stringify(data) + '\0'));
+    }
+
+    sendLaunchModel(scriptPath: string, sockets: DefaultSocket[] = this.getAllSockets()) {
+        this.json({msg: SocketMessageType.LaunchModel, scriptPath}, sockets);
     }
 
     sendHello(sockets: DefaultSocket[] = this.getAllSockets()) {

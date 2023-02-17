@@ -2,7 +2,7 @@ import React, {ReactElement} from 'react';
 import {MenuItem, SubMenu} from "react-pro-sidebar";
 import {Link} from "react-router-dom";
 import {FaStar} from "react-icons/fa";
-import {AppData, ModelData} from "../../../../types/Types";
+import {AppContext, AppProps, ModelData, ModelStatus} from "../../../../types/Types";
 
 function toRenderHierarchy(models: ModelData[]): { [key: string | symbol]: any } {
     let renderHierarchy: { [key: string | symbol]: any } = {};
@@ -19,17 +19,17 @@ function toRenderHierarchy(models: ModelData[]): { [key: string | symbol]: any }
 
 function toBadge(status: string) {
     switch (status) {
-        case 'deploying':
-            return (<span className="badge yellow">Deploying</span>);
-        case 'undeploying':
-            return (<span className="badge blue">Undeploying</span>);
-        case 'running':
-            return (<span className="badge green">Running</span>);
-        case 'error':
-            return (<span className="badge red">Error</span>);
-        case 'off':
+        case ModelStatus.DEPLOYING:
+            return <span className="badge yellow">Deploying</span>;
+        case ModelStatus.UNDEPLOYING:
+            return <span className="badge blue">Undeploying</span>;
+        case ModelStatus.RUNNING:
+            return <span className="badge green">Running</span>;
+        case ModelStatus.ERROR:
+            return <span className="badge red">Error</span>;
+        case ModelStatus.OFF:
         default:
-            return (<></>);
+            return <></>;
     }
 }
 
@@ -39,9 +39,11 @@ function menuify(renderHierarchy: { [key: string | symbol]: any }, uniqueName?: 
     if (Symbol.for('model') in renderHierarchy) {
         let model: ModelData = renderHierarchy[Symbol.for('model')];
 
-        return (<MenuItem icon={<FaStar/>} active={model.uniqueName == uniqueName}
-                          suffix={toBadge(model.status)}
-                          key={pathKey}>{model.configName}<Link to={`/model/${model.uniqueName}`}></Link></MenuItem>);
+        return <MenuItem icon={<FaStar/>} active={model.uniqueName == uniqueName}
+                         suffix={toBadge(model.status)}
+                         key={pathKey}>{model.configName}
+            <Link to={`/model/${model.uniqueName}`}/>
+        </MenuItem>;
     } else {
         let children = keys.map(key => menuify(renderHierarchy[key], uniqueName, key, pathKey));
         if (!current) {
@@ -54,13 +56,9 @@ function menuify(renderHierarchy: { [key: string | symbol]: any }, uniqueName?: 
     }
 }
 
-interface Props {
-    data: AppData,
-    modelUniqueName?: string
-    // for fast interactive reaction
-}
+type Props = {modelUniqueName?: string} & AppProps;
 
-export default function ModelMenu({data, modelUniqueName}: Props) {
-    let renderHierarchy = toRenderHierarchy(data.models);
+export default function ModelMenu({context, modelUniqueName}: Props) {
+    let renderHierarchy = toRenderHierarchy(context.models);
     return menuify(renderHierarchy, modelUniqueName);
 }

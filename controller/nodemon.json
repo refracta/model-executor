@@ -6,7 +6,8 @@
   "ext": "js,ts,json",
   "ignore": [
     "src/**/*.spec.ts",
-    "db.json"
+    "db.json",
+	"controller"
   ],
   "exec": "npm run pack"
 }

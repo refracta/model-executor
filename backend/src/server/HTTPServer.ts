@@ -22,4 +22,10 @@ export default class HTTPServer {
             console.log(`HTTPServer Listening on ${port}.`);
         });
     }
+
+    close() {
+        this.server.close(() => {
+            console.log(`HTTPServer closed.`);
+        });
+    }
 }

@@ -5,7 +5,7 @@ import {SerializeAddon} from "xterm-addon-serialize";
 import {v4 as uuid} from "uuid";
 import {SocketHandler} from "../../../types/Interfaces";
 import {
-    ContainerStatus,
+    ModelStatus,
     DefaultSocket,
     DefaultSocketServer,
     SocketMessageType,
@@ -13,6 +13,9 @@ import {
 } from "../../../types/Types";
 import Docker from "dockerode";
 import DockerUtils from "../../../utils/DockerUtils";
+import fs from "fs";
+import streams from "memory-streams";
+import PathsUtils from "../../../utils/PathsUtils";
 
 type Handle = (server: DefaultSocketServer, socket: DefaultSocket, message: any) => void;
 let handles: { [messageType: string]: Handle } = {};
@@ -22,15 +25,16 @@ handles[SocketMessageType.Launch] = (server: DefaultSocketServer, socket: Defaul
     let model = Model.getModel(socket.data.modelPath);
     let history = model.lastHistory;
     (async () => {
-        await server.manager.sendFile(socket, history.inputPath as string, '/opt/mctr/i/raw');
+        let paths = PathsUtils.getPaths(model.config.input.paths);
+        await server.manager.sendFile(socket, history.inputPath as string, paths.input as string);
         await server.manager.sendTextAsFile(socket, JSON.stringify({
             inputInfo: history.inputInfo,
             parameters: history.parameters
-        }), '/opt/mctr/i/info');
+        }), paths.inputInfo as string);
         socket.data.terminal = new Terminal({allowProposedApi: true});
         socket.data.terminalSerializer = new SerializeAddon();
         socket.data.terminal.loadAddon(socket.data.terminalSerializer);
-        socket.write(JSON.stringify({msg: 'LaunchModel'}));
+        server.manager.sendLaunchModel(paths.script as string, [socket]);
     })();
 }
 
@@ -60,7 +64,7 @@ handles[SocketMessageType.Terminal] = (server: DefaultSocketServer, socket: Defa
         });
         let sockets = PlatformServer.wsServer.manager.getModelSockets(model);
         PlatformServer.wsServer.manager.sendTerminal(socket.data.terminalBuffer, sockets);
-        console.log('Buffer flushed:', socket.data.terminalBuffer.length);
+        // console.log('Buffer flushed:', socket.data.terminalBuffer.length);
         socket.data.terminalBuffer = '';
         socket.data.waitTerminalFlushTimeout = false;
     }, 100);
@@ -73,30 +77,49 @@ handles[SocketMessageType.ProcessEnd] = (server: DefaultSocketServer, socket: De
     history.outputPath = 'resources/' + uuid();
     (async () => {
         let config = model.config;
-        let docker = new Docker(config.dockerServer ? config.dockerServer : PlatformServer.config.defaultDockerServer);
+        let docker = new Docker(PlatformServer.getDockerServer(config.dockerServer));
         let {container, containerInfo} = await DockerUtils.getContainerByName(docker, config.container);
-        await DockerUtils.exec(container, 'touch /opt/mctr/o/desc');
-        await DockerUtils.exec(container, 'touch /opt/mctr/o/info');
-        await server.manager.getFile(socket, history.outputPath as string, '/opt/mctr/o/raw');
-        history.description = await server.manager.getFileAsText(socket, '/opt/mctr/o/desc');
-        history.outputInfo = await server.manager.getFileAsText(socket, '/opt/mctr/o/info');
-        history.outputPath = '/' + history.outputPath;
+        let paths = PathsUtils.getPaths(config.input.paths);
+        // await DockerUtils.exec(container, `touch "${paths.outputDescription}"`);
+        // await DockerUtils.exec(container, `touch "${paths.outputInfo}"`);
+        // await DockerUtils.exec(container, `touch "${paths.output}"`);
+        // await DockerUtils.exec(container, `rm -rf "${paths.controllerPath}/controller"`);
+        await server.manager.getFile(socket, history.outputPath as string, paths.output as string);
+        history.description = await server.manager.getFileAsText(socket, paths.outputDescription as string);
+        history.outputInfo = {};
+        let fileSize = fs.existsSync(history.outputPath as string) ? fs.statSync(history.outputPath as string).size : 0;
+        let outputInfo = await server.manager.getFileAsText(socket, paths.outputInfo as string);
+        try {
+            history.outputInfo = JSON.parse(outputInfo);
+        } catch (e) {
+
+        }
+        history.outputInfo.fileSize = fileSize;
+        if (!history.outputInfo.fileName) {
+            history.outputInfo.fileName = 'output_' + history.inputInfo.originalName;
+        }
         model.lastHistory = history;
+        PlatformServer.wsServer.manager.sendUpdateHistory(model.lastHistory, PlatformServer.wsServer.manager.getHistorySockets(model.lastHistory));
+
         PlatformServer.wsServer.manager.sendUpdateModel(model, PlatformServer.wsServer.manager.getModelSockets(model));
+        PlatformServer.wsServer.manager.sendUpdateHistories();
 
         let modelData = model.data;
-        modelData.status = ContainerStatus.UNDEPLOYING;
+        modelData.status = ModelStatus.UNDEPLOYING;
         model.data = modelData;
         PlatformServer.wsServer.manager.sendUpdateModel(model, PlatformServer.wsServer.manager.getModelSockets(model));
         PlatformServer.wsServer.manager.sendUpdateModels();
+        PlatformServer.wsServer.manager.sendUpdateHistories();
 
         // WARNING: stop 전에 모든 데이터 삭제
         await container.stop();
 
-        modelData.status = ContainerStatus.OFF;
+        modelData.status = ModelStatus.OFF;
         model.data = modelData;
         PlatformServer.wsServer.manager.sendUpdateModel(model, PlatformServer.wsServer.manager.getModelSockets(model));
         PlatformServer.wsServer.manager.sendUpdateModels();
+        PlatformServer.wsServer.manager.sendUpdateHistory(history);
+        PlatformServer.wsServer.manager.sendUpdateHistories();
     })();
 }
 
@@ -105,10 +128,10 @@ handles[SocketMessageType.File] = (server: DefaultSocketServer, socket: DefaultS
     if (socket.data.fileSize === 0) {
         server.manager.json({msg: SocketMessageType.FileReceiveEnd}, [socket]);
         socket.data.fileReceiveResolver();
+        return;
     }
     socket.data.receiveMode = SocketReceiveMode.FILE;
     socket.data.receivedBytes = 0;
-    socket.pipe(socket.data.writeStream);
     server.manager.json({msg: SocketMessageType.WaitReceive}, [socket]);
 }
 
@@ -135,7 +158,7 @@ export default class DefaultSocketHandler implements SocketHandler<DefaultSocket
                     console.error(`split=${JSON.stringify(split)}, dataString=${JSON.stringify(dataString)}`);
                     // process.exit(1);
                 }
-                console.log('DefaultSocketHandler.onMessage', message);
+                // console.log('DefaultSocketHandler.onMessage', message);
                 handles[message.msg](server, socket, message);
             }
             let message;
@@ -143,23 +166,38 @@ export default class DefaultSocketHandler implements SocketHandler<DefaultSocket
                 message = JSON.parse(lastMessageString);
                 socket.data.buffer = '';
             } catch (e) {
-                socket.data.buffer = lastMessageString;
+                if (lastMessageString !== undefined) {
+                    socket.data.buffer = lastMessageString;
+                }
             }
             if (message) {
-                console.log('DefaultSocketHandler.onMessage', message);
+                // console.log('DefaultSocketHandler.onMessage', message);
                 handles[message.msg](server, socket, message);
             }
         } else {
             socket.data.receivedBytes += data.length;
-            if (socket.data.receivedBytes == socket.data.fileSize) {
-                socket.unpipe(socket.data.writeStream);
-                socket.data.writeStream.write(data, function () {
+            if (socket.data.receivedBytes >= socket.data.fileSize) {
+                let delta = socket.data.receivedBytes - socket.data.fileSize;
+                let fileBytes = data.length - delta;
+                let fileData = data.subarray(0, fileBytes);
+                let bufferData = data.subarray(fileBytes + 1, data.length);
+                socket.data.buffer = bufferData.toString();
+                if (socket.data.writeStream instanceof streams.WritableStream) {
                     socket.data.writeStream?.destroy?.();
-                });
-                socket.resume();
-                socket.data.receiveMode = SocketReceiveMode.JSON;
-                server.manager.json({msg: SocketMessageType.FileReceiveEnd}, [socket]);
-                socket.data.fileReceiveResolver();
+                    socket.data.writeStream.write(fileData);
+                    socket.data.receiveMode = SocketReceiveMode.JSON;
+                    server.manager.json({msg: SocketMessageType.FileReceiveEnd}, [socket]);
+                    socket.data.fileReceiveResolver();
+                } else {
+                    socket.data.writeStream.write(fileData, function () {
+                        socket.data.writeStream?.destroy?.();
+                        socket.data.receiveMode = SocketReceiveMode.JSON;
+                        server.manager.json({msg: SocketMessageType.FileReceiveEnd}, [socket]);
+                        socket.data.fileReceiveResolver();
+                    });
+                }
+            } else {
+                socket.data.writeStream.write(data);
             }
         }
     }
