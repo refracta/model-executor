@@ -1,7 +1,0 @@
-{
-  "name": "model-executor",
-  "version": "1.0.0",
-  "dependencies": {
-    "@types/node": "^18.11.18"
-  }
-}
