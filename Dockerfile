@@ -32,6 +32,6 @@ WORKDIR /usr/src/model-executor/backend
 RUN echo '{"httpPort":5000,"socketExternalHost":"localhost","socketPort":5050,"defaultDockerServer":"default","dockerServers":{"default":{"host":"host.docker.internal","port":33000}}}' >> config.json && npm install
 
 RUN printf "#!/bin/bash\n" >> /usr/sbin/startup
-RUN printf 'tmux new -d -s backend && tmux send-keys -t backend "cd /usr/src/model-executor/backend && npm run dev"\n' >> /usr/sbin/entrypoint
-RUN printf 'tmux new -d -s frontend && tmux send-keys -t frontend "cd /usr/src/model-executor/frontend && npm run start"\n' >> /usr/sbin/entrypoint
+RUN printf 'tmux new -d -s backend && tmux send-keys -t backend "cd /usr/src/model-executor/backend && npm run dev" C-m\n' >> /usr/sbin/entrypoint
+RUN printf 'tmux new -d -s frontend && tmux send-keys -t frontend "cd /usr/src/model-executor/frontend && npm run start" C-m\n' >> /usr/sbin/entrypoint
 CMD ["/bin/bash", "-c" , "/bin/bash /usr/sbin/entrypoint && tail -f /dev/null"]
