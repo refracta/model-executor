@@ -2,17 +2,11 @@ import React, {CSSProperties} from 'react';
 import {Button, Card} from 'react-bootstrap';
 import {AppProps, ModelStatus} from "../../../../types/Types";
 import {FileUtils} from "../../../../utils/FileUtils";
+import {DownloadUtils} from "../../../../utils/DownloadUtils";
 
 const img: CSSProperties = {
     maxWidth: '100%',
 };
-
-function download(dataURL: string, fileName: string) {
-    const link = document.createElement("a");
-    link.href = dataURL;
-    link.download = fileName;
-    link.click();
-}
 
 function renderModelView({context}: AppProps) {
     let model = context.model;
@@ -31,7 +25,7 @@ function renderModelView({context}: AppProps) {
                 <span className="badge green">Last executed</span> : ''}</Card.Title>
             {outputPath && fileSize ? <Button className='float-end btn-sm info' onClick={async (e) => {
                 if (outputName) {
-                    download('/' + outputPath, outputName);
+                    DownloadUtils.download('/' + outputPath, outputName);
                 }
             }}>Download</Button> : <></>}
         </Card.Header>
@@ -59,7 +53,7 @@ function renderHistoryView({context}: AppProps) {
             <Card.Title className='mb-0 float-start'>Output</Card.Title>
             {fileSize ? <Button className='float-end btn-sm info' onClick={async (e) => {
                 if (outputName) {
-                    download('/' + outputPath, outputName);
+                    DownloadUtils.download('/' + outputPath, outputName);
                 }
             }}>Download</Button> : <></>}
         </Card.Header>

@@ -12,6 +12,28 @@ import OutputModule from "../card/module/OutputModule";
 import TerminalSplitContainer from "./TerminalSplitContainer";
 
 export default function Model({context}: AppProps) {
+    let model = context.model;
+    let simpleMode = model?.config?.simpleMode;
+    if (simpleMode) {
+        return <div className="main-content-container" style={{height: '100vh'}}>
+            <Row xs={1} md={2} className="pb-2" style={{height: '100vh'}}>
+                <Col className='left-col ps-md-2 pe-md-1 pt-2 pb-2 mb-md-0'>
+                    <Card className='card-explain mb-2 h-75'>
+                        <ModelExplainModule context={context}/>
+                    </Card>
+                    <Card className='card-upload h-25'>
+                        <InputModule context={context}/>
+                    </Card>
+                </Col>
+                <Col className='right-col ps-md-1 pe-md-2 pt-2'>
+                    <Card className='card-output mb-2 h-100'>
+                        <OutputModule context={context}/>
+                    </Card>
+                </Col>
+            </Row>
+        </div>;
+    }
+
     return <TerminalSplitContainer context={context}>
         <Row xs={1} md={2} className="pb-3 h-100">
             <Col className='left-col ps-md-2 pe-md-1 pt-2 pb-2 mb-md-0'>
@@ -34,5 +56,5 @@ export default function Model({context}: AppProps) {
                 </Card>
             </Col>
         </Row>
-    </TerminalSplitContainer>
+    </TerminalSplitContainer>;
 }

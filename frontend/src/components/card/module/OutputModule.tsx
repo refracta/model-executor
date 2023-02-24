@@ -2,8 +2,9 @@ import React from 'react';
 import SingleImageViewer from "./output/SingleImageViewer";
 import {AppProps} from "../../../types/Types";
 import SingleTextViewer from "./output/SingleTextViewer";
+import ZipGalleryViewer from "./output/ZipGalleryViewer";
 
-let modules = [SingleImageViewer, SingleTextViewer];
+let modules = [SingleImageViewer, SingleTextViewer, ZipGalleryViewer];
 
 export default function OutputModule({context}: AppProps) {
     let model = context.model;

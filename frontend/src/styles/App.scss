@@ -71,26 +71,26 @@
 
 .thumbs-container {
   display: flex;
-  flexDirection: row;
-  flexWrap: wrap;
-  marginTop: 16
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: 16px
 }
 
 .thumb {
   display: inline-flex;
-  borderRadius: 2;
+  border-radius: 2px;
   border: 1px solid #eaeaea;
-  marginBottom: 8;
-  marginRight: 8;
+  margin-bottom: 8px;
+  margin-right: 8px;
   width: 50px;
   height: 50px;
   padding: 4px;
-  boxSizing: border-box
+  box-sizing: border-box
 }
 
 .thumb-inner {
   display: flex;
-  minWidth: 0;
+  min-width: 0;
   overflow: hidden
 }
 
@@ -98,4 +98,8 @@
   display: block;
   width: auto;
   height: 100%
+}
+
+.ReactGridGallery_tile-bottom-bar span {
+  color: white !important;
 }

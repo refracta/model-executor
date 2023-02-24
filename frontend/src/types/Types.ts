@@ -9,6 +9,7 @@ export type ConfigData = {
     container: string;
     input: { module: string, options?: any, parameters?: { schema: any, uischema: any, data: any } };
     output: { module: string, options?: any };
+    simpleMode?: boolean;
 }
 
 export type HistoryData = {
