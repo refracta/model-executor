@@ -16,7 +16,7 @@ type Props = {
 
 export default function Aside({toggled, setToggled, context, modelUniqueName, historyNumber}: Props) {
     return (
-        <ProSidebar breakPoint="md" toggled={toggled} onToggle={setToggled}>
+        <ProSidebar breakPoint="md" toggled={toggled} onToggle={setToggled} style={{height: '100vh'}}>
             <SidebarHeader>
                 <div className='sidebar-header-text'>Model executor</div>
             </SidebarHeader>
