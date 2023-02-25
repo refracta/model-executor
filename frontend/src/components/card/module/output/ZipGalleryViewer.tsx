@@ -40,6 +40,7 @@ function getImageInfo(url: string): Promise<HTMLImageElement> {
     })
 }
 
+// TODO: 일부 코드간 교차되는 부분을 제외하고, 상당한 중복 제거 가능할 것으로 생각됨, 복잡도가 심화되는 부분들 모듈화할 것
 function renderModelView({context}: AppProps) {
     let model = context.model;
     let history = model?.lastHistory;
