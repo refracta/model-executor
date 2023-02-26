@@ -23,7 +23,7 @@ WORKDIR /usr/src
 RUN git clone https://github.com/Koreatech-Mongle/model-executor -b develop
 
 WORKDIR /usr/src/model-executor/frontend
-RUN npm install && npm run fix-reloader
+RUN npm install && npm run fix-reloader && npm run disable-strict-mode
 
 WORKDIR /usr/src/model-executor/controller
 RUN npm install && npm run pack
