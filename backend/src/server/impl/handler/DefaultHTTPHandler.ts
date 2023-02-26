@@ -125,7 +125,7 @@ export default class DefaultHTTPHandler implements HTTPHandler {
                 await DockerUtils.exec(container, `rm -rf "${paths.outputInfo}"`);
                 await DockerUtils.exec(container, `rm -rf "${paths.outputDescription}"`);
                 setTimeout(async () => {
-                    await DockerUtils.exec(container, `chmod 777 "${paths.controllerPath}/controller" && "${paths.controllerPath}/controller" ${PlatformServer.config.socketExternalHost} ${PlatformServer.config.socketPort} ${Buffer.from(model.path).toString('base64')} >> ${paths.debugLog} 2>&1`);
+                    await DockerUtils.exec(container, `chmod 777 "${paths.controllerPath}/controller" && "${paths.controllerPath}/controller" ${PlatformServer.config.socketExternalHost} ${PlatformServer.config.socketExternalPort} ${Buffer.from(model.path).toString('base64')} >> ${paths.debugLog} 2>&1`);
                 });
                 model.data = {...model.data, status: ModelStatus.RUNNING};
             } catch (e) {
