@@ -167,8 +167,10 @@ export default class DefaultHTTPHandler implements HTTPHandler {
         });
 
         httpServer.app.get('/api/setting/clear-resources', async (req: Request, res: Response) => {
-            fs.rmSync('resources', {recursive: true, force: true});
-            fs.mkdirSync('resources');
+            let files = fs.readdirSync('resources').map(f => `resources/${f}`);
+            for(let file of files) {
+                fs.rmSync(file, {recursive: true, force: true});
+            }
             res.json({msg: 'success', result: `Clear resources success!`});
         });
 
