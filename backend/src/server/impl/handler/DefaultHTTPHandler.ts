@@ -68,12 +68,17 @@ export default class DefaultHTTPHandler implements HTTPHandler {
             if (!(modelData.status === 'off' || modelData.status === 'error')) {
                 res.json({status: 'fail'});
                 return;
+            }
+
+            let files = req.files as { [fieldName: string]: File[] };
+            let file = files['files']?.[0];
+            if(!file) {
+                res.json({status: 'fail'});
+                return;
             } else {
                 res.json({status: 'success'});
             }
 
-            let files = req.files as { [fieldName: string]: File[] };
-            let file = files['files'][0];
             file.originalname = Buffer.from(file.originalname, 'latin1').toString('utf8');
             let historyIndex = Database.Instance.addHistoryData({
                 modelName: model.config.name,
