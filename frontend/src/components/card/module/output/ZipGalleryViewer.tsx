@@ -140,16 +140,16 @@ function renderModelView({context}: AppProps) {
                     <br/>
                 </> : <></>}
             </Card.Text>
-            {outputPath && downloadProgress.percent !== 100 ? <ProgressBar>
+            {outputPath && fileSize !== 0 && downloadProgress.percent !== 100 ? <ProgressBar>
                 <ProgressBar striped now={downloadProgress.percent}
                              label={`Download - ${downloadProgress.scaledPercent}% (${FileUtils.formatBytes(downloadProgress.transferred, 1)}/${FileUtils.formatBytes(downloadProgress.transferred, 1)})`}/>
             </ProgressBar> : <></>}
-            {outputPath && downloadProgress.percent === 100 && decompressProgress.percent !== 100 ? <ProgressBar>
+            {outputPath && fileSize !== 0 && downloadProgress.percent === 100 && decompressProgress.percent !== 100 ? <ProgressBar>
                 <ProgressBar variant='warning' striped now={decompressProgress.percent}
                              label={`Decompress - ${decompressProgress.scaledPercent}% (${FileUtils.formatBytes(decompressProgress.transferred, 1)}/${FileUtils.formatBytes(decompressProgress.transferred, 1)})`}/>
             </ProgressBar> : <></>}
 
-            {outputPath ? <div>
+            {outputPath && fileSize !== 0 ? <div>
                 <Gallery id='gallery'
                          images={images}
                          onClick={handleClick}
@@ -274,11 +274,11 @@ function renderHistoryView({context}: AppProps) {
                     <br/>
                 </> : <></>}
             </Card.Text>
-            {outputPath && downloadProgress.percent !== 100 ? <ProgressBar>
+            {outputPath && fileSize !== 0 && downloadProgress.percent !== 100 ? <ProgressBar>
                 <ProgressBar striped now={downloadProgress.percent}
                              label={`Download - ${downloadProgress.scaledPercent}% (${FileUtils.formatBytes(downloadProgress.transferred, 1)}/${FileUtils.formatBytes(downloadProgress.transferred, 1)})`}/>
             </ProgressBar> : <></>}
-            {outputPath && downloadProgress.percent === 100 && decompressProgress.percent !== 100 ? <ProgressBar>
+            {outputPath && fileSize !== 0 && downloadProgress.percent === 100 && decompressProgress.percent !== 100 ? <ProgressBar>
                 <ProgressBar variant='warning' striped now={decompressProgress.percent}
                              label={`Decompress - ${decompressProgress.scaledPercent}% (${FileUtils.formatBytes(decompressProgress.transferred, 1)}/${FileUtils.formatBytes(decompressProgress.transferred, 1)})`}/>
             </ProgressBar> : <></>}

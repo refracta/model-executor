@@ -18,10 +18,10 @@ export default function Model({context}: AppProps) {
         return <div className="main-content-container" style={{height: '100vh'}}>
             <Row xs={1} md={2} className="pb-2" style={{height: '100vh'}}>
                 <Col className='left-col ps-md-2 pe-md-1 pt-2 pb-2 mb-md-0'>
-                    <Card className='card-explain mb-2 h-75'>
+                    <Card className='card-explain mb-2' style={{height: '50%'}}>
                         <ModelExplainModule context={context}/>
                     </Card>
-                    <Card className='card-upload h-25'>
+                    <Card className='card-upload' style={{height: '50%'}}>
                         <InputModule context={context}/>
                     </Card>
                 </Col>

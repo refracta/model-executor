@@ -4,6 +4,7 @@ import {Card, Nav, Tab} from "react-bootstrap";
 import {useDropzone} from "react-dropzone";
 import {COMMON_MIME_TYPES} from 'file-selector/dist/file'
 import {FileUtils} from "../../../../utils/FileUtils";
+import {DownloadUtils} from "../../../../utils/DownloadUtils";
 
 type IFile = File & { preview?: string };
 
@@ -114,15 +115,15 @@ function renderModelView({context}: AppProps) {
                     </Nav.Item>
                 </Nav>
             </Card.Header>
-            <Card.Body>
-                <Tab.Content>
-                    <Tab.Pane eventKey="input-upload">
-                        <section className="container">
+            <Card.Body style={{height: '100%'}}>
+                <Tab.Content style={{height:'inherit'}}>
+                    <Tab.Pane eventKey="input-upload" style={{height:'inherit'}}>
+                        <section className="container" style={{height:'inherit'}}>
                             <div {...getRootProps({className: 'dropzone'})}
                                  style={hideDropzone ? {display: 'none'} : {}}>
                                 <input {...getInputProps()} />
-                                <p className='mb-0'>Drag & drop or click to upload</p>
-                                <p className='mb-0'>Support format: {extensions ? extensions.join(', ') : 'image'}</p>
+                                <p className='mb-0' style={{fontSize: 'larger'}}>Drag & drop or click to upload</p>
+                                <p className='mb-0' style={{fontSize: 'larger'}}>Support format: {extensions ? extensions.join(', ') : 'image'}</p>
                             </div>
                             <aside className='thumbs-container'>
                                 {thumbs}
@@ -130,18 +131,25 @@ function renderModelView({context}: AppProps) {
                             <span>{uploadExplain}</span>
                         </section>
                     </Tab.Pane>
-                    <Tab.Pane eventKey="last-input-upload">
-                        {inputInfo ? <div>
-                            <span style={{fontWeight: 'bold'}}>Filename: </span><span>{inputInfo?.originalName}</span>
-                            <br/>
-                            <span style={{fontWeight: 'bold'}}>Type: </span><span>{inputInfo?.type}</span>
-                            <br/>
-                            <span style={{fontWeight: 'bold'}}>Size: </span><span>{FileUtils.formatBytes(inputInfo?.size)}</span>
-                        </div> : <></>}
-                        {inputInfo?.type?.startsWith('image') ? <img src={'/' + model?.lastHistory?.inputPath} style={{
-                            objectFit: 'contain',
-                            maxWidth: '100%',
-                        }}/> : <></>}
+                    <Tab.Pane eventKey="last-input-upload" style={{height:'inherit'}}>
+                        <div style={{height:'inherit', display: 'flex', flexDirection:'column'}}>
+                            <div>
+                                {inputInfo ? <div>
+                                    <span style={{fontWeight: 'bold'}}>Filename: </span><span>{inputInfo?.originalName} ({FileUtils.formatBytes(inputInfo?.size)})</span>
+                                </div> : <></>}
+                            </div>
+                            <div style={{overflow:'hidden', display:'flex', justifyContent:'center'}}>
+                                {inputInfo?.type?.startsWith('image') ? <a href='#' onClick={e =>{
+                                    DownloadUtils.download('/' + model?.lastHistory?.inputPath, inputInfo?.originalName);
+                                }}>
+                                    {inputInfo?.type?.startsWith('image') ? <img src={'/' + model?.lastHistory?.inputPath} style={{
+                                        objectFit: 'contain',
+                                        maxWidth: '100%',
+                                        maxHeight: '100%',
+                                    }}/> : <></>}
+                                </a> : <></>}
+                            </div>
+                        </div>
                     </Tab.Pane>
                 </Tab.Content>
             </Card.Body>
@@ -156,18 +164,25 @@ function renderHistoryView({context}: AppProps) {
             <Card.Header>
                 <Card.Title className='mb-0'>Input</Card.Title>
             </Card.Header>
-            <Card.Body>
-                {inputInfo ? <div>
-                    <span style={{fontWeight: 'bold'}}>Filename: </span><span>{inputInfo?.originalName}</span>
-                    <br/>
-                    <span style={{fontWeight: 'bold'}}>Type: </span><span>{inputInfo?.type}</span>
-                    <br/>
-                    <span style={{fontWeight: 'bold'}}>Size: </span><span>{FileUtils.formatBytes(inputInfo?.size)}</span>
-                </div> : <></>}
-                {inputInfo?.type?.startsWith('image') ? <img src={'/' + history?.inputPath} style={{
-                    objectFit: 'contain',
-                    maxWidth: '100%',
-                }}/> : <></>}
+            <Card.Body style={{height: '100%'}}>
+                <div style={{height:'inherit', display: 'flex', flexDirection:'column'}}>
+                    <div>
+                        {inputInfo ? <div>
+                            <span style={{fontWeight: 'bold'}}>Filename: </span><span>{inputInfo?.originalName} ({FileUtils.formatBytes(inputInfo?.size)})</span>
+                        </div> : <></>}
+                    </div>
+                    <div style={{overflow:'hidden', display:'flex', justifyContent:'center'}}>
+                        {inputInfo?.type?.startsWith('image') ? <a href='#' onClick={e =>{
+                            DownloadUtils.download('/' + history?.inputPath, inputInfo?.originalName);
+                        }}>
+                            <img src={'/' + history?.inputPath} style={{
+                                objectFit: 'contain',
+                                maxWidth: '100%',
+                                maxHeight: '100%',
+                            }}/>
+                        </a> : <></>}
+                    </div>
+                </div>
             </Card.Body>
         </Tab.Container></>;
 }
