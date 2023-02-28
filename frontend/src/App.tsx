@@ -129,7 +129,7 @@ export default function App() {
                     <Main setToggled={setToggled} context={context}/>
                 </div>
             }></Route>
-            {models.length > 0 ? <Route path='/model' element={<Navigate to={`/model/${models[models.length - 1].uniqueName}`} replace/>}/> : <></>}
+            {models.length > 0 ? <Route path='/model' element={<Navigate to={`/model/${models[0].uniqueName}`} replace/>}/> : <></>}
             {histories.length > 0 ? <Route path='/history' element={<Navigate to={`/history/${histories.length}`} replace/>}/> : <></>}
         </Routes>
     );
