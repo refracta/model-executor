@@ -1,6 +1,6 @@
 import React from 'react';
 import {Menu, ProSidebar, SidebarContent, SidebarHeader} from "react-pro-sidebar";
-import {Route, Routes} from 'react-router-dom';
+import {Link, Route, Routes} from 'react-router-dom';
 import {AppProps} from "../../types/Types";
 import SiteMenu from "./menu/SiteMenu";
 import ModelMenu from "./menu/impl/ModelMenu";
@@ -18,7 +18,9 @@ export default function Aside({toggled, setToggled, context, modelUniqueName, hi
     return (
         <ProSidebar breakPoint="md" toggled={toggled} onToggle={setToggled} style={{height: '100vh'}}>
             <SidebarHeader>
-                <div className='sidebar-header-text'>Model executor</div>
+                <div className='sidebar-header-text'>
+                    <Link to='/' style={{textDecoration: 'none', color: '#b3b8d4'}}>Model executor</Link>
+                </div>
             </SidebarHeader>
             <SidebarContent>
                 <SiteMenu/>
@@ -27,7 +29,8 @@ export default function Aside({toggled, setToggled, context, modelUniqueName, hi
                         <Route path="/model/" element={<ModelMenu context={context}/>}/>
                         <Route path="/model/:uniqueName"
                                element={<ModelMenu context={context} modelUniqueName={modelUniqueName}/>}/>
-                        <Route path="/history/*" element={<HistoryMenu context={context} historyNumber={historyNumber}/>}/>
+                        <Route path="/history/*"
+                               element={<HistoryMenu context={context} historyNumber={historyNumber}/>}/>
                         <Route path="/setting/*" element={<SettingMenu/>}/>
                     </Routes>
                 </Menu>
