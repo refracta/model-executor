@@ -130,7 +130,7 @@ export default function App() {
                 </div>
             }></Route>
             {models.length > 0 ? <Route path='/model' element={<Navigate to={`/model/${models[models.length - 1].uniqueName}`} replace/>}/> : <></>}
-            {histories.length > 0 ? <Route path='/history' element={<Navigate to={`/history/${histories.length}}`} replace/>}/> : <></>}
+            {histories.length > 0 ? <Route path='/history' element={<Navigate to={`/history/${histories.length}`} replace/>}/> : <></>}
         </Routes>
     );
 }
