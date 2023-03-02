@@ -11,11 +11,15 @@ export default class Database {
         return this.instance || (this.instance = new this());
     }
 
-    static async init(adapter: JSONFileSync<Data>) {
+    static async init(adapter: JSONFileSync<Data>, force: boolean = false) {
         Database.adapter = adapter;
         Database.db = new LowSync<Data>(Database.adapter);
         Database.db.read();
-        Database.db.data ||= {models: {}, histories: []};
+        if (force) {
+            Database.db.data = {models: {}, histories: []};
+        } else {
+            Database.db.data ||= {models: {}, histories: []};
+        }
         Database.db.write();
     }
 

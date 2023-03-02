@@ -72,7 +72,7 @@ export default class DefaultHTTPHandler implements HTTPHandler {
 
             let files = req.files as { [fieldName: string]: File[] };
             let file = files['files']?.[0];
-            if(!file) {
+            if (!file) {
                 res.json({status: 'fail'});
                 return;
             } else {
@@ -161,14 +161,13 @@ export default class DefaultHTTPHandler implements HTTPHandler {
         });
 
         httpServer.app.get('/api/setting/clear-database', async (req: Request, res: Response) => {
-            fs.unlinkSync('database/db.json');
-            await Database.init(new JSONFileSync<Data>('database/db.json'));
+            await Database.init(new JSONFileSync<Data>('database/db.json'), true);
             res.json({msg: 'success', result: `Clear database success!`});
         });
 
         httpServer.app.get('/api/setting/clear-resources', async (req: Request, res: Response) => {
             let files = fs.readdirSync('resources').map(f => `resources/${f}`);
-            for(let file of files) {
+            for (let file of files) {
                 fs.rmSync(file, {recursive: true, force: true});
             }
             res.json({msg: 'success', result: `Clear resources success!`});
