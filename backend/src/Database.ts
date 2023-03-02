@@ -1,5 +1,6 @@
 import {JSONFileSync, LowSync} from "@commonify/lowdb"
 import {ModelStatus, Data, HistoryData, ModelData, Models} from "./types/Types";
+import fs from "fs";
 
 export default class Database {
     private static instance: Database;
@@ -59,5 +60,8 @@ export default class Database {
     }
 }
 (async () => {
-    await Database.init(new JSONFileSync<Data>('db.json'));
+    if (!fs.existsSync('database')) {
+        await fs.mkdirSync('database');
+    }
+    await Database.init(new JSONFileSync<Data>('database/db.json'));
 })();
