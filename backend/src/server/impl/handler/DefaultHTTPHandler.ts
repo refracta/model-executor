@@ -161,8 +161,8 @@ export default class DefaultHTTPHandler implements HTTPHandler {
         });
 
         httpServer.app.get('/api/setting/clear-database', async (req: Request, res: Response) => {
-            fs.unlinkSync('db.json');
-            await Database.init(new JSONFileSync<Data>('db.json'));
+            fs.unlinkSync('database/db.json');
+            await Database.init(new JSONFileSync<Data>('database/db.json'));
             res.json({msg: 'success', result: `Clear database success!`});
         });
 

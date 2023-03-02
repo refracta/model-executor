@@ -6,7 +6,7 @@
   "ext": "js,ts,json",
   "ignore": [
     "src/**/*.spec.ts",
-    "db.json"
+    "database/db.json"
   ],
   "exec": "ts-node src/Starter.ts"
 }
