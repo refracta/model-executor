@@ -22,6 +22,13 @@ export default function App() {
     const [historiesLoaded, setHistoriesLoaded] = useState<boolean>(false);
     const [parameters, setParameters] = useState<any>({});
 
+    let modelUniqueName = useMatch('/model/:uniqueName')?.params?.uniqueName;
+    let historyNumber = useMatch('/history/:historyNumber')?.params?.historyNumber;
+    let path = useMatch('/*')?.params['*'] as string;
+    useEffect(() => {
+        sendJsonMessage({msg: 'Path', path});
+    }, [path]);
+
     const {
         sendMessage,
         sendJsonMessage,
@@ -44,17 +51,12 @@ export default function App() {
                 setHistories(data.histories);
             } else if (data?.msg === WSMessageType.UpdateHistory) {
                 console.log(data);
-                setHistory(data.history);
+                if(history?.number === data.history.number){
+                    setHistory(data.history);
+                }
             }
         }
     });
-
-    let modelUniqueName = useMatch('/model/:uniqueName')?.params?.uniqueName;
-    let historyNumber = useMatch('/history/:historyNumber')?.params?.historyNumber;
-    let path = useMatch('/*')?.params['*'] as string;
-    useEffect(() => {
-        sendJsonMessage({msg: 'Path', path});
-    }, [path]);
 
     let context = {
         model,
