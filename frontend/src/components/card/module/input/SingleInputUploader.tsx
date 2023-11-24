@@ -116,14 +116,15 @@ function renderModelView({context}: AppProps) {
                 </Nav>
             </Card.Header>
             <Card.Body style={{height: '100%'}}>
-                <Tab.Content style={{height:'inherit'}}>
-                    <Tab.Pane eventKey="input-upload" style={{height:'inherit'}}>
-                        <section className="container" style={{height:'inherit'}}>
+                <Tab.Content style={{height: 'inherit'}}>
+                    <Tab.Pane eventKey="input-upload" style={{height: 'inherit'}}>
+                        <section className="container" style={{height: 'inherit'}}>
                             <div {...getRootProps({className: 'dropzone'})}
                                  style={hideDropzone ? {display: 'none'} : {}}>
                                 <input {...getInputProps()} />
                                 <p className='mb-0' style={{fontSize: 'larger'}}>Drag & drop or click to upload</p>
-                                <p className='mb-0' style={{fontSize: 'larger'}}>Support format: {extensions ? extensions.join(', ') : 'image'}</p>
+                                <p className='mb-0' style={{fontSize: 'larger'}}>Support
+                                    format: {extensions ? extensions.join(', ') : 'image'}</p>
                             </div>
                             <aside className='thumbs-container'>
                                 {thumbs}
@@ -131,22 +132,28 @@ function renderModelView({context}: AppProps) {
                             <span>{uploadExplain}</span>
                         </section>
                     </Tab.Pane>
-                    <Tab.Pane eventKey="last-input-upload" style={{height:'inherit'}}>
-                        <div style={{height:'inherit', display: 'flex', flexDirection:'column'}}>
+                    <Tab.Pane eventKey="last-input-upload" style={{height: 'inherit'}}>
+                        <div style={{height: 'inherit', display: 'flex', flexDirection: 'column'}}>
                             <div>
                                 {inputInfo ? <div>
-                                    <span style={{fontWeight: 'bold'}}>Filename: </span><span>{inputInfo?.originalName} ({FileUtils.formatBytes(inputInfo?.size)})</span>
+                                    <a href='#' onClick={e => {
+                                        DownloadUtils.download('/' + model?.lastHistory?.inputPath, inputInfo?.originalName);
+                                    }}>
+                                    <span
+                                        style={{fontWeight: 'bold'}}>Filename: </span><span>{inputInfo?.originalName} ({FileUtils.formatBytes(inputInfo?.size)})</span>
+                                    </a>
                                 </div> : <></>}
                             </div>
-                            <div style={{overflow:'hidden', display:'flex', justifyContent:'center'}}>
-                                {inputInfo?.type?.startsWith('image') ? <a href='#' onClick={e =>{
+                            <div style={{overflow: 'hidden', display: 'flex', justifyContent: 'center'}}>
+                                {inputInfo?.type?.startsWith('image') ? <a href='#' onClick={e => {
                                     DownloadUtils.download('/' + model?.lastHistory?.inputPath, inputInfo?.originalName);
                                 }}>
-                                    {inputInfo?.type?.startsWith('image') ? <img src={'/' + model?.lastHistory?.inputPath} style={{
-                                        objectFit: 'contain',
-                                        maxWidth: '100%',
-                                        maxHeight: '100%',
-                                    }}/> : <></>}
+                                    {inputInfo?.type?.startsWith('image') ?
+                                        <img src={'/' + model?.lastHistory?.inputPath} style={{
+                                            objectFit: 'contain',
+                                            maxWidth: '100%',
+                                            maxHeight: '100%',
+                                        }}/> : <></>}
                                 </a> : <></>}
                             </div>
                         </div>
@@ -165,14 +172,19 @@ function renderHistoryView({context}: AppProps) {
                 <Card.Title className='mb-0'>Input</Card.Title>
             </Card.Header>
             <Card.Body style={{height: '100%'}}>
-                <div style={{height:'inherit', display: 'flex', flexDirection:'column'}}>
+                <div style={{height: 'inherit', display: 'flex', flexDirection: 'column'}}>
                     <div>
                         {inputInfo ? <div>
-                            <span style={{fontWeight: 'bold'}}>Filename: </span><span>{inputInfo?.originalName} ({FileUtils.formatBytes(inputInfo?.size)})</span>
+                            <a href='#' onClick={e => {
+                                DownloadUtils.download('/' + history?.inputPath, inputInfo?.originalName);
+                            }}>
+                                <span
+                                    style={{fontWeight: 'bold'}}>Filename: </span><span>{inputInfo?.originalName} ({FileUtils.formatBytes(inputInfo?.size)})</span>
+                            </a>
                         </div> : <></>}
                     </div>
-                    <div style={{overflow:'hidden', display:'flex', justifyContent:'center'}}>
-                        {inputInfo?.type?.startsWith('image') ? <a href='#' onClick={e =>{
+                    <div style={{overflow: 'hidden', display: 'flex', justifyContent: 'center'}}>
+                        {inputInfo?.type?.startsWith('image') ? <a href='#' onClick={e => {
                             DownloadUtils.download('/' + history?.inputPath, inputInfo?.originalName);
                         }}>
                             <img src={'/' + history?.inputPath} style={{
