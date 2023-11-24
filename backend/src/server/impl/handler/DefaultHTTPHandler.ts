@@ -61,6 +61,11 @@ export default class DefaultHTTPHandler implements HTTPHandler {
                 res.json({status: 'fail'});
                 return;
             }
+            let zipInfo;
+            try {
+                zipInfo = JSON.parse(req.body.zipInfo);
+            } catch (e) {
+            }
 
             let model = Model.getModel(req.body.modelUniqueName);
             let config = model.config;
@@ -88,7 +93,8 @@ export default class DefaultHTTPHandler implements HTTPHandler {
                 inputInfo: {
                     originalName: file.originalname,
                     type: file.mimetype,
-                    size: file.size
+                    size: file.size,
+                    zipInfo
                 },
                 parameters,
                 inputModule: config.input.module,
