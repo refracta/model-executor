@@ -38,11 +38,16 @@ export default function Terminal({context}: AppProps) {
         });
 
         const resizeObserver = new ResizeObserver(entries => {
-            try {
-                global?.fitTerminal();
-            } catch (err) {
-                console.log(err);
-            }
+            window.requestAnimationFrame(() => {
+                if (!Array.isArray(entries) || !entries.length) {
+                    return;
+                }
+                try {
+                    global?.fitTerminal();
+                } catch (err) {
+                    console.log(err);
+                }
+            });
         });
 
         resizeObserver.observe(document.querySelector(".terminal-container") as HTMLElement);
